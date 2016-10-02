@@ -17,7 +17,7 @@ app.listen(1337,function(){
     console.log('Ready on port 1337');
 });
 
-
+//All the values for the tabs 
 var tabs = [
     {link: "/", text : "Home"},
     {link: "school", text : "school"},
@@ -82,3 +82,18 @@ app.get('/edit', function(req,res){
     });
 })
 
+app.post('/edit', function(req,res){
+    var redirect;
+    // has to be changed to a databse query when implemented
+    for (var i=0; i < activities.length;i++)
+    {
+        if (activities[i].id == req.body.ID)
+        {
+            activities[i].value = req.body.change_value;
+            redirect = activities[i].category;
+            //Since only one value can be edited each time, there is no need to continue with the for loop after the right item has been found
+            break;
+        }
+    }
+    res.redirect(redirect);
+})

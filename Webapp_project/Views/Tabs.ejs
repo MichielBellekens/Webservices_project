@@ -29,6 +29,7 @@
         <% if(Listitems[i].id == edit_id && edit_id != null )
             {%>
                 <form action="/edit" method="post">
+                    <input name ="ID" type="hidden" value="<%= Listitems[i].id%>">
                     <input name="change_value" type ="text" value="<%= Listitems[i].value%>">
                     <button type="submit">Save changes</button>
                 </form>

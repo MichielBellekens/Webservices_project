@@ -26,19 +26,20 @@ var tab = [
     {link:'others', val :'Others'}
 ];
 
+
 var school = [
-    'Set up raspberry pi',
-    'Make webapp views'
+    {ID : 1, mes : 'Set up raspberry pi'},
+    {ID : 2, mes : 'Make webapp views'}
 ];
 
 var Spare_time = [
-    'Search for tv shows',
-    'Listen to some music'
+    {ID : 3, mes : 'Search for tv shows'},
+    {ID : 4, mes : 'Listen to some music'}
 ];
 
 var others=[
-    'Do wathever',
-    'Do some more whatever'
+    {ID : 5, mes : 'Do wathever'},
+    {ID : 6, mes : 'Do some more whatever'}
 ]
 
 
@@ -58,7 +59,11 @@ app.get('/school',function(req, res){
     res.render('Tabs',{
         title :'To do lists school',
         items: tab,
-        values: school
+        values: school,
+        status: {
+            action: "render",
+            id : null
+        }
     });
 });
 
@@ -68,7 +73,11 @@ app.get('/spare',function(req, res){
     res.render('Tabs',{
         title :'To do lists',
         items : tab,
-        values: Spare_time
+        values: Spare_time,
+        status: {
+            action: "render",
+            id : null
+        }
     });
 });
 
@@ -78,12 +87,37 @@ app.get('/others',function(req, res){
     res.render('Tabs',{
         title :'To do lists',
         items: tab,
-        values: others
+        values: others,
+        status: {
+            action: "render",
+            id : null
+        }
     });
 });
 //parser to get data from the inputfield of the view using post --> see express docs about req.body
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 
+//Create the index page when a get request to the / url is made
+app.get('/edit',function(req, res){
+    res.render('Tabs',{
+        title :'To do lists',
+        items: tab,
+        values: school,
+        status: {
+            action: "edit",
+            id : req.param("ID")
+        }
+    });
+});
+
+app.post('/edit', function(req, res)
+{
+    var mes = req.body.newMsg;
+    var id = req.body.id;
+    console.log(mes);
+    console.log(id);
+    //check from which tab it comes and change the right value
+});
 /*//Handle the post request of the new data
 app.post('/add', function (req, res) {
     var newItem = req.body.newItem;
