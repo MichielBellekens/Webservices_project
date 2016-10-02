@@ -17,7 +17,30 @@ app.listen(1337,function(){
     console.log('Ready on port 1337');
 });
 
-//All the values for the tabs 
+//values to parsed database elements
+var mysql      = require('mysql');
+var connection = mysql.createConnection({
+    host     : '127.0.0.1',
+    user     : 'root',
+    password : '9Mei1995',
+    database: 'webapp_todo'
+});
+
+connection.connect();
+
+connection.query('SELECT * FROM tabs',function(err,rows){
+    if(err) throw err;
+
+    console.log('Data received from Db:\n');
+    for (var i = 0; i < rows.length; i++) {
+        console.log(rows[i].Text);
+    };
+    console.log(rows);
+});
+
+connection.end();
+
+//All the values for the tabs
 var tabs = [
     {link: "/", text : "Home"},
     {link: "school", text : "school"},
