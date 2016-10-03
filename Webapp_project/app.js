@@ -25,7 +25,7 @@ var connection = mysql.createConnection({
     password : '9Mei1995',
     database: 'webapp_todo'
 });
-connection.connect();
+
 var activities;
 load_activities();
 function load_activities()
@@ -45,14 +45,17 @@ var tabs = [
     {link: "/", text : "Home"},
     {link: "school", text : "school"},
     {link: "spare_time", text : "Spare time"},
-    {link: "others", text : "Others"}
+    {link: "others", text : "Others"},
+    {link: "add", text : "Add new item"}
 ];
 
+var footer = "@2016 Michiel Bellekens webapplications&services Thomas More Denayer Sint-Katelijne-Waver";
 app.get('/', function(req,res){
     res.render('Index',{
         title : "To do lists home page",
         tab : tabs,
-        message : " This page keeps track of all of your To do list from all your activities"
+        message : " This page keeps track of all of your To do list from all your activities",
+        footer: footer
     });
 })
 
@@ -62,7 +65,8 @@ app.get('/school', function(req,res){
         tab : tabs,
         Listitems: activities,
         current_category : "school",
-        edit_id: null
+        edit_id: null,
+        footer: footer
     });
 })
 
@@ -72,7 +76,8 @@ app.get('/spare_time', function(req,res){
         tab : tabs,
         Listitems: activities,
         current_category : "spare_time",
-        edit_id: null
+        edit_id: null,
+        footer: footer
     });
 })
 
@@ -82,7 +87,27 @@ app.get('/others', function(req,res){
         tab : tabs,
         Listitems: activities,
         current_category : "others",
-        edit_id: null
+        edit_id: null,
+        footer: footer
+    });
+})
+
+app.get('/others', function(req,res){
+    res.render('Tabs',{
+        title : "To do lists others",
+        tab : tabs,
+        Listitems: activities,
+        current_category : "others",
+        edit_id: null,
+        footer: footer
+    });
+})
+
+app.get('/add', function(req,res){
+    res.render('AddNew',{
+        title : "Add new item",
+        tab : tabs,
+        footer: footer,
     });
 })
 
@@ -92,7 +117,8 @@ app.get('/edit', function(req,res){
         tab : tabs,
         Listitems: activities,
         current_category : req.param("current_cat"),
-        edit_id: req.param("id")
+        edit_id: req.param("id"),
+        footer: footer
     });
 })
 
