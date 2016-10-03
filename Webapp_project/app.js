@@ -25,20 +25,20 @@ var connection = mysql.createConnection({
     password : '9Mei1995',
     database: 'webapp_todo'
 });
-
 connection.connect();
+var activities;
+load_activities();
+function load_activities()
+{
+    connection.query('SELECT * FROM activities',function(err,rows){
+        if(err) throw err;
+        create_local_variable(rows);
+    });
+}
+function create_local_variable(data) {
+    activities = data;
+}
 
-connection.query('SELECT * FROM tabs',function(err,rows){
-    if(err) throw err;
-
-    console.log('Data received from Db:\n');
-    for (var i = 0; i < rows.length; i++) {
-        console.log(rows[i].Text);
-    };
-    console.log(rows);
-});
-
-connection.end();
 
 //All the values for the tabs
 var tabs = [
@@ -46,15 +46,6 @@ var tabs = [
     {link: "school", text : "school"},
     {link: "spare_time", text : "Spare time"},
     {link: "others", text : "Others"}
-];
-
-var activities = [
-    {id:0, category: "school", value: "Webservice project"},
-    {id:1, category: "school", value: "DSP leren"},
-    {id:2, category: "spare_time", value: "Series/films opzoeken"},
-    {id:3, category: "spare_time", value: "11.22.63 verder lezen"},
-    {id:4, category: "others", value: "bureau overladen"},
-    {id:5, category: "others", value: "kabels bureau proper leggen"}
 ];
 
 app.get('/', function(req,res){
@@ -77,7 +68,7 @@ app.get('/school', function(req,res){
 
 app.get('/spare_time', function(req,res){
     res.render('Tabs',{
-        title : "To do lists school",
+        title : "To do lists spare time",
         tab : tabs,
         Listitems: activities,
         current_category : "spare_time",
@@ -87,7 +78,7 @@ app.get('/spare_time', function(req,res){
 
 app.get('/others', function(req,res){
     res.render('Tabs',{
-        title : "To do lists school",
+        title : "To do lists others",
         tab : tabs,
         Listitems: activities,
         current_category : "others",
@@ -105,18 +96,24 @@ app.get('/edit', function(req,res){
     });
 })
 
+
 app.post('/edit', function(req,res){
-    var redirect;
-    // has to be changed to a databse query when implemented
-    for (var i=0; i < activities.length;i++)
-    {
-        if (activities[i].id == req.body.ID)
-        {
-            activities[i].value = req.body.change_value;
-            redirect = activities[i].category;
-            //Since only one value can be edited each time, there is no need to continue with the for loop after the right item has been found
-            break;
-        }
-    }
-    res.redirect(redirect);
+    console.log("entering the edit post");
+    var id = req.body.ID;
+    var newmsg = req.body.change_value;
+    console.log(id);
+    console.log(newmsg);
+    connection.query('UPDATE activities SET Value =" '+req.body.change_value+'" WHERE ID='+req.body.ID,function(err,rows){
+            if(err) throw err;
+
+            console.log('Data changed in Db:\n');
+        connection.query('SELECT category FROM activities WHERE ID='+req.body.ID,function(err,rows){
+            if(err) throw err;
+
+            console.log('Data received from Db:\n');
+            console.log(rows);
+            res.redirect(rows[0].category);
+            load_activities();
+            });
+        });
 })

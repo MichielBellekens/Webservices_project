@@ -26,16 +26,16 @@
         if(current_category == Listitems[i].category)
         {%>
             <li class="list-group-item list-group-item-success">
-        <% if(Listitems[i].id == edit_id && edit_id != null )
+        <% if(Listitems[i].ID == edit_id && edit_id != null )
             {%>
                 <form action="/edit" method="post">
-                    <input name ="ID" type="hidden" value="<%= Listitems[i].id%>">
-                    <input name="change_value" type ="text" value="<%= Listitems[i].value%>">
+                    <input name ="ID" type="hidden" value="<%= Listitems[i].ID%>">
+                    <input name="change_value" type ="text" value="<%= Listitems[i].Value%>">
                     <button type="submit">Save changes</button>
                 </form>
                 <%}else{%>
-                <%= Listitems[i].value%>
-                <a href="/edit?id=<%= Listitems[i].id%>&current_cat=<%=current_category%>">Edit</a>
+                <%= Listitems[i].Value%>
+                <a href="/edit?id=<%= Listitems[i].ID%>&current_cat=<%=current_category%>">Edit</a>
             </li>
     <%}}}%>
 </ul>
