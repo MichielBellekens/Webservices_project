@@ -57,7 +57,7 @@ app.get('/', function(req,res){
         message : " This page keeps track of all of your To do list from all your activities",
         footer: footer
     });
-})
+});
 
 app.get('/school', function(req,res){
     res.render('Tabs',{
@@ -68,7 +68,7 @@ app.get('/school', function(req,res){
         edit_id: null,
         footer: footer
     });
-})
+});
 
 app.get('/spare_time', function(req,res){
     res.render('Tabs',{
@@ -79,7 +79,7 @@ app.get('/spare_time', function(req,res){
         edit_id: null,
         footer: footer
     });
-})
+});
 
 app.get('/others', function(req,res){
     res.render('Tabs',{
@@ -90,18 +90,8 @@ app.get('/others', function(req,res){
         edit_id: null,
         footer: footer
     });
-})
+});
 
-app.get('/others', function(req,res){
-    res.render('Tabs',{
-        title : "To do lists others",
-        tab : tabs,
-        Listitems: activities,
-        current_category : "others",
-        edit_id: null,
-        footer: footer
-    });
-})
 
 app.get('/add', function(req,res){
     res.render('AddNew',{
@@ -113,14 +103,27 @@ app.get('/add', function(req,res){
 
 app.get('/edit', function(req,res){
     res.render('Tabs',{
-        title : "To do lists school",
+        title : "To do lists " +req.param("current_cat"),
         tab : tabs,
         Listitems: activities,
         current_category : req.param("current_cat"),
         edit_id: req.param("id"),
         footer: footer
     });
-})
+});
+
+app.get('/delete', function(req,res){
+    console.log("entering the delete post");
+    var querystring = 'DELETE FROM activities WHERE ID=' + req.param("id") + ' AND category= "' + req.param("current_cat")+'"';
+    console.log(querystring);
+    connection.query(querystring,function(err,rows){
+        if(err) throw err;
+
+        console.log('Data changed in Db:\n');
+        load_activities();
+        res.redirect(req.param("current_cat"));
+    });
+});
 
 
 app.post('/edit', function(req,res){
@@ -142,4 +145,18 @@ app.post('/edit', function(req,res){
             load_activities();
             });
         });
-})
+});
+
+app.post('/addnew', function(req,res){
+    console.log("entering the new post");
+    var cat = req.body.Category_select;
+    var newdes = req.body.Task_description;
+    console.log(cat);
+    console.log(newdes);
+    var querystring= "INSERT INTO activities (category,Value) VALUES ('"+cat+"','"+newdes+"')";
+    console.log(querystring);
+    connection.query(querystring,function(err,rows){
+        load_activities();
+        res.redirect(cat);
+    });
+});

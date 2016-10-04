@@ -38,10 +38,10 @@
         </form>
         </li>
 </ul>
-<form>
+<form action="/addnew" method="post">
     <div class="form-group">
         <label for="Category_select">Category</label>
-        <select id="Category_select" class="form-control">
+        <select name="Category_select" id="Category_select" class="form-control">
             <%for(var i=1; i< tab.length-1; i++){%>
             <option value="<%=tab[i].link%>"><%=tab[i].text%></option>
             <%}%>
@@ -49,7 +49,7 @@
     </div>
     <div class="form-group">
         <label for="Task_description">Description</label>
-        <input type="password" class="form-control" id="Task_description" placeholder="Password">
+        <input name="Task_description" type="text" class="form-control" id="Task_description" placeholder="Description">
     </div>
     <button type="submit" class="btn btn-default">Add item</button>
 </form>

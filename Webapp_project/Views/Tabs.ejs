@@ -54,6 +54,7 @@
                 <%}else{%>
                 <%= Listitems[i].Value%>
                 <a href="/edit?id=<%= Listitems[i].ID%>&current_cat=<%=current_category%>">Edit</a>
+                <a href="/delete?id=<%= Listitems[i].ID%>&current_cat=<%=current_category%>">Delete</a>
             </li>
     <%}}}%>
 </ul>
