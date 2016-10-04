@@ -49,7 +49,7 @@ var tabs = [
     {link: "add", text : "Add new item"}
 ];
 
-var footer = "@2016 Michiel Bellekens webapplications&services Thomas More Denayer Sint-Katelijne-Waver";
+var footer = "2016 Michiel Bellekens webapplications&services @ Thomas More Denayer Sint-Katelijne-Waver";
 app.get('/', function(req,res){
     res.render('Index',{
         title : "To do lists home page",
