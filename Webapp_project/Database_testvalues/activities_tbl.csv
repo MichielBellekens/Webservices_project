@@ -1,7 +1,17 @@
-[{"ID":1, "category":"school", "Value":" DSP leren"},
- {"ID":3, "category":"spare_time", "Value":"11.22.63 verder lezen"},
- {"ID":5, "category":"others", "Value":" kabels bureau ordenen"},
- {"ID":6, "category":"school", "Value":"Webservice project"},
- {"ID":7, "category":"spare_time", "Value":"search for new tv shows"},
- {"ID":10, "category":"school", "Value":"Opzoekwerk management"},
- {"ID":11, "category":"others", "Value":" Bureau overladen en spullen weggooien"}]
+ID;category;Value;userID
+3;spare_time; 11.22.63 verder lezen;0
+5;others;  kabels bureau ordenen;0
+7;spare_time;search for new tv shows;0
+10;school;Opzoekwerk management;0
+11;others; Bureau overladen en spullen weggooien;0
+12;school;Add some css and extra wrappers to make the site look better;0
+13;school; Add confirmation request when delting/editing;0
+15;spare_time;Watch limitless and search on imdb;0
+16;school;Markdown samenvatting van project webservices;0
+20;school;search nodjs encryption;0
+21;school;commentin all the code from webservice project;0
+22;school; testing all functionality webservices project;0
+23;school; add priorities to the activity lists;0
+24;others;Get some rest;16
+25;school;Adding error catch blocks in query commands and encrypting;0
+26;school;DSP leren en opzoeken;0
