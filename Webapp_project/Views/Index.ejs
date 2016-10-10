@@ -16,24 +16,28 @@
     <% for (var i =0; i < tab.length;i++){%>
     <li role="presentation"><a href=<%=tab[i].link%>><%=tab[i].text %></a></li>
     <%}%>
+    <%if(cur_user == null){%>
     <li>
-        <form class="form-inline">
+        <form class="form-inline" action="/login" method="post">
             <div class="form-group">
                 <label class="sr-only" for="exampleInputEmail3">Email address</label>
-                <input type="email" class="form-control" id="exampleInputEmail3" placeholder="Email">
+                <input name="email" class="form-control" id="exampleInputEmail3" placeholder="Email">
             </div>
             <div class="form-group">
                 <label class="sr-only" for="exampleInputPassword3">Password</label>
-                <input type="password" class="form-control" id="exampleInputPassword3" placeholder="Password">
-            </div>
-            <div class="checkbox">
-                <label>
-                    <input type="checkbox"> Remember me
-                </label>
+                <input name="password" class="form-control" type="password" id="exampleInputPassword3" placeholder="Password">
             </div>
             <button type="submit" class="btn btn-default">Sign in</button>
         </form>
     </li>
+    <li>
+        <a class="nav-tabs btn btn-default" href="create_account">Create account</a>
+    </li>
+    <%}else{%>
+    <li>
+        <a class="btn btn-default" href="/logout">logout</a>
+    </li>
+    <%}%>
 </ul>
 <p><%= message%></p>
 <div class="panel-footer"><%=footer%></div>

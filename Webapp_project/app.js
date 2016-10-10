@@ -26,12 +26,17 @@ var connection = mysql.createConnection({
     database: 'webapp_todo'
 });
 
+//a variable to store the currently logged in users activities for all of the categories
 var activities;
-load_activities();
-function load_activities()
+var current_user_id;
+//load_activities();
+function load_activities(userid)
 {
-    connection.query('SELECT * FROM activities',function(err,rows){
+    console.log("entering loading function");
+    console.log(current_user_id);
+    connection.query('SELECT * FROM activities WHERE userID='+userid,function(err,rows){
         if(err) throw err;
+        console.log(rows);
         create_local_variable(rows);
     });
 }
@@ -53,6 +58,7 @@ var footer = "2016 Michiel Bellekens webapplications&services @ Thomas More Dena
 app.get('/', function(req,res){
     res.render('Index',{
         title : "To do lists home page",
+        cur_user:current_user_id,
         tab : tabs,
         message : " This page keeps track of all of your To do list from all your activities",
         footer: footer
@@ -60,45 +66,73 @@ app.get('/', function(req,res){
 });
 
 app.get('/school', function(req,res){
-    res.render('Tabs',{
-        title : "To do lists school",
-        tab : tabs,
-        Listitems: activities,
-        current_category : "school",
-        edit_id: null,
-        footer: footer
-    });
+    if (activities == null)
+    {
+        res.redirect('/');
+    }
+    else
+    {
+        res.render('Tabs',{
+            title : "To do lists school",
+            tab : tabs,
+            Listitems: activities,
+            current_category : "school",
+            edit_id: null,
+            footer: footer
+        });
+    }
 });
 
 app.get('/spare_time', function(req,res){
-    res.render('Tabs',{
-        title : "To do lists spare time",
-        tab : tabs,
-        Listitems: activities,
-        current_category : "spare_time",
-        edit_id: null,
-        footer: footer
-    });
+    if (activities == null)
+    {
+        res.redirect('/');
+    }
+    else
+    {
+        res.render('Tabs',{
+            title : "To do lists spare time",
+            tab : tabs,
+            Listitems: activities,
+            current_category : "spare_time",
+            edit_id: null,
+            footer: footer
+        });
+    }
 });
 
 app.get('/others', function(req,res){
-    res.render('Tabs',{
-        title : "To do lists others",
-        tab : tabs,
-        Listitems: activities,
-        current_category : "others",
-        edit_id: null,
-        footer: footer
-    });
+    if (activities == null)
+    {
+        res.redirect('/');
+    }
+    else
+    {
+        res.render('Tabs',{
+            title : "To do lists others",
+            tab : tabs,
+            Listitems: activities,
+            current_category : "others",
+            edit_id: null,
+            footer: footer
+        });
+    }
 });
 
 
 app.get('/add', function(req,res){
-    res.render('AddNew',{
-        title : "Add new item",
-        tab : tabs,
-        footer: footer,
-    });
+    if (activities == null)
+    {
+        res.redirect('/');
+    }
+    else
+    {
+        res.render('AddNew',{
+            title : "Add new item",
+            tab : tabs,
+            footer: footer,
+        });
+    }
 })
 
 app.get('/edit', function(req,res){
@@ -120,7 +154,7 @@ app.get('/delete', function(req,res){
         if(err) throw err;
 
         console.log('Data changed in Db:\n');
-        load_activities();
+        load_activities(current_user_id);
         res.redirect(req.param("current_cat"));
     });
 });
@@ -142,7 +176,7 @@ app.post('/edit', function(req,res){
             console.log('Data received from Db:\n');
             console.log(rows);
             res.redirect(rows[0].category);
-            load_activities();
+            load_activities(current_user_id);
             });
         });
 });
@@ -153,10 +187,71 @@ app.post('/addnew', function(req,res){
     var newdes = req.body.Task_description;
     console.log(cat);
     console.log(newdes);
-    var querystring= "INSERT INTO activities (category,Value) VALUES ('"+cat+"','"+newdes+"')";
+    var querystring= "INSERT INTO activities (category,Value,userID) VALUES ('"+cat+"','"+newdes+"',"+current_user_id+")";
     console.log(querystring);
     connection.query(querystring,function(err,rows){
-        load_activities();
+        if(err) throw err;
+
+        load_activities(current_user_id);
         res.redirect(cat);
+    });
+});
+
+app.post('/login', function(req,res){
+    var mail = req.body.email;
+    var passw = req.body.password;
+    var querystring= "Select * FROM users where Mail = '"+ mail + "' AND password='" + passw +"'";
+    console.log(querystring);
+    connection.query(querystring,function(err,rows){
+        if(rows.length != 1)
+        {
+            res.redirect('/');
+        }
+        else
+        {
+            console.log("successfully logged in");
+            load_activities(rows[0].ID);
+            current_user_id = rows[0].ID;
+            res.redirect('/school');
+        }
+    });
+});
+
+app.get('/logout', function(req,res){
+    activities = null;
+    current_user_id =  null;
+    res.redirect('/');
+});
+
+app.get('/create_account', function(req,res){
+    res.render('create_account',{
+        title : "Create a new account",
+        tab : tabs,
+        footer: footer
+    });
+});
+
+app.post('/create_account', function(req,res){
+    var mail = req.body.Mailaddress;
+    var passw = req.body.passwd;
+    var querystring= "Select * FROM users where Mail = '"+ mail + "'";
+    console.log(querystring);
+    connection.query(querystring,function(err,rows){
+        console.log(rows.length);
+        if(rows.length == 0)
+        {
+            console.log("Entering creation loop");
+            querystring = "INSERT INTO users (Mail, Password) VALUES ('"+mail+"','"+passw+"')";
+            connection.query(querystring, function(err, rows)
+            {
+                if(err) throw err;
+                console.log("adding new account");
+            });
+        }
+        else
+        {
+            console.log("The mail is already used");
+            res.redirect('/');
+        }
     });
 });
