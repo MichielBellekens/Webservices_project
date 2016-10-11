@@ -2,10 +2,12 @@
     TO DO
         CHECK TO DO'S IN THE CODE
         CLEAN UP THE CODE
-        REMOVE ALL OF THE CONSOLE.LOG()
+        REMOVE ALL OF THE CONSOLE.LOG() debug statements
         cREATE HTTPS INSTEAD OF HTTP
         SECURITY ANDCERTIFICATES
-        CHECK IF VIEW ARE VALID
+        CHECK IF VIEWs ARE VALID HTML
+        CHECK IF THE TYPE OF THE MAIL ADDRESS IS VALID (--> REGEX)
+        CLEAN UP THE COMMENTS
 */
 
 var expr =  require("express");                     //include express to make templates possible
@@ -22,7 +24,7 @@ app.listen(1337,function(){
 });
 
 //create connection to database
-var mysql      = require('mysql');
+var mysql = require('mysql');
 var connection = mysql.createConnection({
     host     : '127.0.0.1',
     user     : 'root',
@@ -30,12 +32,9 @@ var connection = mysql.createConnection({
     database: 'webapp_todo'
 });
 
-//a variable to store the currently logged in users activities for all of the categories
-var activities;
-//variable to store the currently logged in user' id
-var current_user_id;
-//common footer for all the pages
-var footer = "2016 Michiel Bellekens webapplications&services @ Thomas More Denayer Sint-Katelijne-Waver";
+var activities; //a variable to store the currently logged in users activities for all of the categories
+var current_user_id;    //variable to store the currently logged in user' id
+var footer = "Michiel Bellekens webapplications & services @Thomas More Denayer Sint-Katelijne-Waver 2016";     //common footer for all the pages
 
 //function to load all the activities of the currently logged in user into the local variable activities
 function load_activities(userid)
@@ -214,6 +213,8 @@ app.post('/login', function(req,res){
     var querystring= "Select * FROM users where Mail = '"+ mail + "'";
     console.log(querystring);
     connection.query(querystring,function(err,rows){
+        if(err) throw err;
+
         if(rows.length == 1)
         {
             hashing(req.body.password).verifyAgainst(rows[0].Password, function(error, verified) {
@@ -265,6 +266,8 @@ app.post('/create_account', function(req,res){
         var querystring= "Select * FROM users where Mail = '"+ mail + "'";
         console.log(querystring);
         connection.query(querystring,function(err,rows){
+            if(err) throw err;
+
             console.log(rows.length);
             if(rows.length == 0)
             {
