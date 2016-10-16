@@ -18,6 +18,15 @@ var hashing = require('password-hash-and-salt');    //include the hashin lib to 
 app.set("view engine", "ejs");                      //set the view engine to ejs for the app express application
 app.set("views", path.join(__dirname, 'Views'));    //Point the views setting to the dir that contains all the project views
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+/*require('letsencrypt-express').create({
+    server: '127.0.0.1',
+    email: 'michiel.bellekens@hotmail.com',
+    agreeTos: true,
+    approveDomains: [ '127.0.0.1' ],
+    app: app
+    }).listen(80 , 443);*/
+
 //listen on an 1337 for all communication
 app.listen(1337,function(){
     console.log('Ready on port 1337');
@@ -41,7 +50,7 @@ function load_activities(userid)
 {
     console.log("Loading all the activities ...");
     console.log(current_user_id);
-    connection.query('SELECT * FROM activities WHERE userID='+userid,function(err,rows){
+    connection.query("SELECT * FROM activities WHERE userID="+userid,function(err,rows){
         if(err) throw err;
         console.log(rows);
         activities = rows;
@@ -127,7 +136,7 @@ app.get('/others', function(req,res){
 
 //render the page to add an activity
 app.get('/add', function(req,res){
-    if (activities == null)
+    if (current_user_id == null)
     {
         res.redirect('/');
     }
@@ -156,7 +165,7 @@ app.get('/edit', function(req,res){
 //is run when the delete link is pressed --> the get param are used to determine which element needs to be deleted
 app.get('/delete', function(req,res){
     console.log("entering the delete post");
-    var querystring = 'DELETE FROM activities WHERE ID=' + req.param("id") + ' AND category= "' + req.param("current_cat")+'"';
+    var querystring = "DELETE FROM activities WHERE ID=" + connection.escape(req.param("id")) + " AND category= " + connection.escape(req.param("current_cat"));
     console.log(querystring);
     connection.query(querystring,function(err,rows){
         if(err) throw err;
@@ -174,11 +183,11 @@ app.post('/edit', function(req,res){
     var newmsg = req.body.change_value;
     console.log(id);
     console.log(newmsg);
-    connection.query('UPDATE activities SET Value =" '+req.body.change_value+'" WHERE ID='+req.body.ID,function(err,rows){
+    connection.query("UPDATE activities SET Value ="+connection.escape(req.body.change_value)+" WHERE ID=" +req.body.ID,function(err,rows){
             if(err) throw err;
 
             console.log('Data changed in Db:\n');
-        connection.query('SELECT category FROM activities WHERE ID='+req.body.ID,function(err,rows){
+        connection.query("SELECT category FROM activities WHERE ID="+req.body.ID,function(err,rows){
             if(err) throw err;
 
             console.log('Data received from Db:\n');
@@ -196,7 +205,7 @@ app.post('/addnew', function(req,res){
     var newdes = req.body.Task_description;
     console.log(cat);
     console.log(newdes);
-    var querystring= "INSERT INTO activities (category,Value,userID) VALUES ('"+cat+"','"+newdes+"',"+current_user_id+")";
+    var querystring= "INSERT INTO activities (category,Value,userID) VALUES ("+connection.escape(cat)+","+connection.escape(newdes)+","+current_user_id+")";
     console.log(querystring);
     connection.query(querystring,function(err,rows){
         if(err) throw err;
@@ -210,7 +219,7 @@ app.post('/addnew', function(req,res){
 app.post('/login', function(req,res){
     var mail = req.body.email;
     var passw = req.body.password;
-    var querystring= "Select * FROM users where Mail = '"+ mail + "'";
+    var querystring= "Select * FROM users where Mail = "+ connection.escape(mail);
     console.log(querystring);
     connection.query(querystring,function(err,rows){
         if(err) throw err;
@@ -263,7 +272,7 @@ app.post('/create_account', function(req,res){
         if (error)
             throw new Error('Hashing produced an error');
 
-        var querystring= "Select * FROM users where Mail = '"+ mail + "'";
+        var querystring= "Select * FROM users where Mail = "+ connection.escape(mail);
         console.log(querystring);
         connection.query(querystring,function(err,rows){
             if(err) throw err;
@@ -272,12 +281,12 @@ app.post('/create_account', function(req,res){
             if(rows.length == 0)
             {
                 console.log("Entering creation loop");
-                querystring = "INSERT INTO users (Mail, Password) VALUES ('"+mail+"','"+hash+"')";
+                querystring = "INSERT INTO users (Mail, Password) VALUES ("+connection.escape(mail)+",'"+hash+"')";
                 connection.query(querystring, function(err, rows)
                 {
                     if(err) throw err;
 
-                    querystring = "SELECT * FROM users where Mail='"+mail+"'";
+                    querystring = "SELECT * FROM users where Mail="+connection.escape(mail);
                     connection.query(querystring, function (err, rows) {
                         if(err) throw err;
 
