@@ -11,9 +11,10 @@
 
     <!-- Latest compiled and minified JavaScript -->
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-    <link rel="stylesheet" type="text/css" href="Ownstyle.css">
+    <link rel="stylesheet" type="text/css" href="/additional_style.css">
 </head>
 <body>
+<div class="container">
 <h1><%= title %></h1>
 <ul class="nav nav-tabs">
     <% for (var i =0; i < tab.length;i++){%>
@@ -44,5 +45,6 @@
     <%}}}%>
 </ul>
 <div class="panel-footer"><%=footer%></div>
+</div>
 </body>
 </html>

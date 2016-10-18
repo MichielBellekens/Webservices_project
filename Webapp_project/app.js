@@ -9,16 +9,15 @@
         CHECK IF THE TYPE OF THE MAIL ADDRESS IS VALID (--> REGEX)
         CLEAN UP THE COMMENTS
 */
-
-var expr =  require("express");                     //include express to make templates possible
+var expr =  require("express");                     //include express to make routing possible
 var path = require("path");                         //include path to be able to get the current dir
 var bodyParser = require('body-parser');            //parser to get data from the inputfield of the view using post --> see express docs about req.body
 var app = expr();                                   //Creates an Express application.
 var hashing = require('password-hash-and-salt');    //include the hashin lib to hash and verify the passwords of the users
-app.set("view engine", "ejs");                      //set the view engine to ejs for the app express application
+app.set("view engine", "ejs");                      //set the view engine to ejs for the app express application --> make templates possible
 app.set("views", path.join(__dirname, 'Views'));    //Point the views setting to the dir that contains all the project views
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-
+app.use(expr.static(__dirname + "/styles"));
 /*require('letsencrypt-express').create({
     server: '127.0.0.1',
     email: 'michiel.bellekens@hotmail.com',
@@ -203,16 +202,23 @@ app.post('/addnew', function(req,res){
     console.log("entering the new post");
     var cat = req.body.Category_select;
     var newdes = req.body.Task_description;
-    console.log(cat);
-    console.log(newdes);
-    var querystring= "INSERT INTO activities (category,Value,userID) VALUES ("+connection.escape(cat)+","+connection.escape(newdes)+","+current_user_id+")";
-    console.log(querystring);
-    connection.query(querystring,function(err,rows){
-        if(err) throw err;
-
-        load_activities(current_user_id);
+    if(newdes == "")
+    {
         res.redirect(cat);
-    });
+    }
+    else
+    {
+        console.log(cat);
+        console.log(newdes);
+        var querystring= "INSERT INTO activities (category,Value,userID) VALUES ("+connection.escape(cat)+","+connection.escape(newdes)+","+current_user_id+")";
+        console.log(querystring);
+        connection.query(querystring,function(err,rows){
+            if(err) throw err;
+
+            load_activities(current_user_id);
+            res.redirect(cat);
+        });
+    }
 });
 
 //log in and check the information provide by the user in the log in fields
