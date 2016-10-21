@@ -27,7 +27,7 @@ app.use(expr.static(__dirname + "/styles"));
     }).listen(80 , 443);*/
 
 //listen on an 1337 for all communication
-app.listen(1337,function(){
+app.listen(1337,'0.0.0.0',function(){
     console.log('Ready on port 1337');
 });
 
