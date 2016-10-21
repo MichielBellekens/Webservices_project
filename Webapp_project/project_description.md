@@ -11,3 +11,6 @@
 * Security/maintenance
   * https (let's encrypt)
   * Not sure yet
+
+#Remember
+* C:\Users\Gebruiker\Desktop\Webservices_project\Webapp_project\node_modules\sshpk in package.json (C:\Users\Gebruiker\Desktop\Webservices_project\Webapp_project\node_modules\bcrypt-pbkdf) needs to be changed to the complementary path of the linux file system
