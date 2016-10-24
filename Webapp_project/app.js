@@ -18,13 +18,7 @@ app.set("view engine", "ejs");                      //set the view engine to ejs
 app.set("views", path.join(__dirname, 'Views'));    //Point the views setting to the dir that contains all the project views
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(expr.static(__dirname + "/styles"));
-/*require('letsencrypt-express').create({
-    server: '127.0.0.1',
-    email: 'michiel.bellekens@hotmail.com',
-    agreeTos: true,
-    approveDomains: [ '127.0.0.1' ],
-    app: app
-    }).listen(80 , 443);*/
+
 
 //listen on an 1337 for all communication
 app.listen(1337,'0.0.0.0',function(){
