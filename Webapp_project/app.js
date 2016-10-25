@@ -65,7 +65,7 @@ app.get('/', function(req,res){
         title : "To do lists home page",
         cur_user: current_user_id,
         tab : tabs,
-        message : " This page keeps track of all of your To do list from all your activities",
+        message : " This webapp keeps track of all of your to do lists in different categories",
         footer: footer
     });
 });
