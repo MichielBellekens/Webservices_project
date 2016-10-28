@@ -1,0 +1,20 @@
+Command used --> show create table table_name;
+
+CREATE TABLE `activities` (
+   `ID` int(11) NOT NULL AUTO_INCREMENT,
+   `category` varchar(50) NOT NULL,
+   `Value` varchar(140) NOT NULL,
+   `userID` int(11) NOT NULL,
+   PRIMARY KEY (`ID`),
+   UNIQUE KEY `ID_UNIQUE` (`ID`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=30 DEFAULT CHARSET=utf8
+ 
+ CREATE TABLE `users` (
+   `ID` int(11) NOT NULL AUTO_INCREMENT,
+   `Mail` varchar(128) NOT NULL,
+   `Password` varchar(275) NOT NULL,
+   PRIMARY KEY (`ID`),
+   UNIQUE KEY `ID_UNIQUE` (`ID`)
+ ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8
+ 
+ 
