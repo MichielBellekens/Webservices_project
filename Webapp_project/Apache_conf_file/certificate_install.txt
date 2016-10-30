@@ -1,0 +1,15 @@
+letsencrypt install
+
+- surf naar https://certbot.eff.org/#debianother-apache
+-BIj het starten van ./certbot-auto geeft de terminal een foutmelding 
+	"Certbot doesn't know how to automatically configure the web server on this system. 
+	However, it can still get a certificate for you. Please run "certbot-auto certonly" to do so. 
+	You'll need to manually configure your web server to use the resulting certificate."
+	
+- run the command ./certbot-auto certonly
+- volg de stappen die nu op het scherm komen
+	spin p temporary webserver
+	enter you domain
+	if error for port stop apache
+	uw certificates zijn te vinden onder /etc/letsencrypt/live/{domainname}/
+	voeg deze toe aan uw apache config
