@@ -1,0 +1,45 @@
+instellen statisch ip
+bron: https://www.abelectronics.co.uk/kb/article/31/raspbian-jessie-static-ip-setup
+
+voeg onderstaande lijnen toe aan de /etc/dhcpcd.conf file
+
+interface wlan0
+static ip_address=192.168.0.237
+static routers=192.168.0.1
+static domain_name_servers=192.168.0.1
+
+bron: http://manpages.ubuntu.com/manpages/wily/man5/interfaces.5.html
+open de file /etc/network/interfaces en zet de wlan0 interface op manual dit is nodig omdat anders wlan0 2 ip adressen krijgt
+1 statisch en 1 via DHCP -->    The manual Method
+       This method may be used to define interfaces for which no configuration
+       is done by default. Such interfaces can be configured manually by means
+       of up and down commands or /etc/network/if-*.d scripts.
+bron: http://superuser.com/questions/983378/raspberry-pi-has-both-static-and-dhcp-ip-address/1097873#1097873
+
+# interfaces(5) file used by ifup(8) and ifdown(8)
+
+# Please note that this file is written to be used with dhcpcd	==>BELANGRIJKE LIJNEN
+# For static IP, consult /etc/dhcpcd.conf and 'man dhcpcd.conf'	==>BELANGRIJKE LIJNEN
+
+# Include files from /etc/network/interfaces.d:
+source-directory /etc/network/interfaces.d
+
+
+auto lo
+iface lo inet loopback
+
+iface eth0 inet manual
+
+allow-hotplug wlan0
+auto wlan0
+#iface wlan0 inet dhcp
+iface wlan0 inet manual --> VERANDERT NAAR MANUAL
+wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+iface default inet dhcp
+
+
+allow-hotplug wlan1
+iface wlan1 inet manual
+    wpa-conf /etc/wpa_supplicant/wpa_supplicant.conf
+
+
