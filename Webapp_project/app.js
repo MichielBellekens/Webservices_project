@@ -19,7 +19,6 @@ app.set("views", path.join(__dirname, 'Views'));    //Point the views setting to
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(expr.static(__dirname + "/styles"));
 
-
 //listen on an 1337 for all communication
 app.listen(1337,'0.0.0.0',function(){
     console.log('Ready on port 1337');
@@ -65,7 +64,6 @@ app.get('/', function(req,res){
         title : "To do lists home page",
         cur_user: current_user_id,
         tab : tabs,
-        message : " This webapp keeps track of all of your to do lists in different categories",
         footer: footer
     });
 });
