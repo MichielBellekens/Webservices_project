@@ -17,45 +17,47 @@
 
 >* de express module laden en een express app maken
 
-        var express = require('express')    //De express module laden
-        var app = express()                 //Een express app creëren
+            var express = require('express')    //De express module laden
+            var app = express()                 //Een express app creëren
 
 >* route maken die **Hello World!** als response geeft wanneer er een get request wordt gestuurd naar **localhost:3000/**
-        app.get('/', function (req, res) {
-          res.send('Hello World!')
-        })
+
+            app.get('/', function (req, res) {
+              res.send('Hello World!')
+            })
     
 
 >* route maken die **Hello from secondpage!** als response geeft wanneer er een get request wordt gestuurd naar **localhost:3000//secondpage**
-        app.get('/secondpage', function (req, res) {
-          res.send('Hello from secondpage!')
-        })
+
+            app.get('/secondpage', function (req, res) {
+              res.send('Hello from secondpage!')
+            })
 
 >* Laat de express app luisteren op poort 3000
 
-        app.listen(3000, function () {
-          console.log('Example app listening on port 3000!')
-        })
+            app.listen(3000, function () {
+              console.log('Example app listening on port 3000!')
+            })
 
 
 >* Volledige code --> documentatie express get functie [https://expressjs.com/en/4x/api.html#app.get](https://expressjs.com/en/4x/api.html#app.get).
 
     
-        var express = require('express')
-        var app = express()
-        
-        app.get('/', function (req, res) {
-          res.send('Hello World!')
-        })
-        
-        app.get('/secondpage', function (req, res) {
-          res.send('Hello from secondpage!')
-        })
-        
-        
-        app.listen(3000, function () {
-          console.log('Example app listening on port 3000!')
-        })
+            var express = require('express')
+            var app = express()
+            
+            app.get('/', function (req, res) {
+              res.send('Hello World!')
+            })
+            
+            app.get('/secondpage', function (req, res) {
+              res.send('Hello from secondpage!')
+            })
+            
+            
+            app.listen(3000, function () {
+              console.log('Example app listening on port 3000!')
+            })
 
 10. Run onderstaande commando in de commmand prompt.
 
