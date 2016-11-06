@@ -4,16 +4,17 @@
 1. Ga naar [https://nodejs.org/en/](https://nodejs.org/en/) en download Node.js
 2. Volg de installer nadat deze is gedownload
 3. Maak een nieuwe map voor uw project
+
 ##Express framework
-4. In dit project wordt gebruik gemaakt van Express. Dit is een webapplication framework voor Node.js.
-5. open de command prompt en navigeer naar je projectmap en geef onderstaand commando in om de nodige node modules te installeren.
+1. In dit project wordt gebruik gemaakt van Express. Dit is een webapplication framework voor Node.js.
+2. open de command prompt en navigeer naar je projectmap en geef onderstaand commando in om de nodige node modules te installeren.
 
         npm install express
         
-6. Npm staat voor node package manager en dient om makkelijk node modules te installeren.
-7. Kijk nu in uw project folder, hier zou een map **node_modules** moeten staan.
-8. Maak een javascript file aan in uw projectfolder, noem deze bijvoorbeeld **app.js**.
-9. Maak je eerste express app door volgend code in app.js te kopiëren
+3. Npm staat voor node package manager en dient om makkelijk node modules te installeren.
+4. Kijk nu in uw project folder, hier zou een map **node_modules** moeten staan.
+5. Maak een javascript file aan in uw projectfolder, noem deze bijvoorbeeld **app.js**.
+6. Maak je eerste express app door volgend code in app.js te kopiëren
 
     * de express module laden en een express app maken
 
@@ -56,14 +57,16 @@
               console.log('Example app listening on port 3000!')
             })
 
-10. Run onderstaande commando in de commmand prompt.
+7. Run onderstaande commando in de commmand prompt.
 
         node app.js
         
-11. In de command prompt wordt nu de tekst **Example app listening on port 3000!** getoond.
-12. Open nu uw browser en surf naar *localhost:3000* er zou een pagina moeten verschijnen met de tekst **_Hello World!_**.
-13. Indien u naar *localhost:3000/secondpage* surft moet de tekstt **_Hello from secondpage!_** verschijnen.
-14. Dit is de basis voor een express webapp.
+8. In de command prompt wordt nu de tekst **Example app listening on port 3000!** getoond.
+9. Open nu uw browser en surf naar *localhost:3000* er zou een pagina moeten verschijnen met de tekst **_Hello World!_**.
+10. Indien u naar *localhost:3000/secondpage* surft moet de tekstt **_Hello from secondpage!_** verschijnen.
+11. Dit is de basis voor een express webapp.
+
+**_Post requests werken op dezelfde manier maar dan app.post() i.p.v. app.get()_**
 
 ##EJS view engine
 1. Maak een nieuwe map aan in uw project folder en noem deze Views.
@@ -132,6 +135,53 @@
         node app.js
  
 7. Test of het werkt door naar **localhost:3000** te surfen
+
+#Variabele doorgeven aan de views
+De res.render functie heeft ook een parameter locals. Hiermee kan je variabele meegeven aan de view.
+Zie documentatie [https://expressjs.com/en/4x/api.html#res.render](https://expressjs.com/en/4x/api.html#res.render)
+
+1. Pas de get route voor / aan zodat deze er als volgt uitziet. 
+De variabele title en datum kunnen nu in de view worden gebruikt.
+
+        app.get('/', function (req, res) {
+          res.render('Index',{
+                title: "Welkom pagina",
+                datum: new Date()
+          });
+        })
+         
+2. Pas de view Index.ejs aan zodat deze de meegegeven variabele gebruikt.
+
+        <!doctype html>
+        <html lang="en">
+        <head>
+            <meta charset="utf-8">
+            <title>My First webapp</title>
+        </head>
+        <body>
+        	<h1><%=title%></h1>
+        	<%= datum %>
+        </body>
+        </html>
+        
+3. Start de webapp opnieuw
+        
+        node app.js
+        
+4. Wanneer je nu naar localhost:3000 surft toont de pagina de titel Welkom pagina en de huidige datum.
+
+#Data uit views doorgeven aan app.js
+
+##Get method
+1. Bij een get request kunnen we req.param() gebruiken om de parameters in te lezen.
+ Wanneer er bijvoorbeeld een parameter id is meegegeven door /secondpage?id=1 kunnen we 
+ met onderstaande code deze parameter lezen en opslaan in een vatiabele
+
+        var ID = req.param("id");
+        
+        
+##Post method
+CONTINUE HERE
 #Mysql in app.js
 
 #Apache2 instellingen
@@ -146,6 +196,7 @@
 
 # Bronnen
 * Hoofdbron voor opstart: [https://www.youtube.com/watch?v=QseHOX-5nJQ](https://www.youtube.com/watch?v=QseHOX-5nJQ)
+* Site van Node.js [https://nodejs.org/en/](https://nodejs.org/en/)
 * Site van express webframework voor Node.js [http://expressjs.com/](http://expressjs.com/)
 * Initiële voorbeeldcode [http://expressjs.com/en/starter/hello-world.html](http://expressjs.com/en/starter/hello-world.html)
 * Instellingen variabele express app [http://expressjs.com/en/api.html#app.set](http://expressjs.com/en/api.html#app.set)
