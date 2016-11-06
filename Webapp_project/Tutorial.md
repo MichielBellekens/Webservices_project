@@ -15,33 +15,30 @@
 8. Maak een javascript file aan in uw projectfolder, noem deze bijvoorbeeld **app.js**.
 9. Maak je eerste express app door volgend code in app.js te kopiëren
 
->* de express module laden en een express app maken
+    * de express module laden en een express app maken
 
             var express = require('express')    //De express module laden
             var app = express()                 //Een express app creëren
 
->* route maken die **Hello World!** als response geeft wanneer er een get request wordt gestuurd naar **localhost:3000/**
-
+    * route maken die **Hello World!** als response geeft wanneer er een get request wordt gestuurd naar **localhost:3000/**
+        
             app.get('/', function (req, res) {
               res.send('Hello World!')
             })
     
-
->* route maken die **Hello from secondpage!** als response geeft wanneer er een get request wordt gestuurd naar **localhost:3000//secondpage**
-
+    * route maken die **Hello from secondpage!** als response geeft wanneer er een get request wordt gestuurd naar **localhost:3000//secondpage**
+        
             app.get('/secondpage', function (req, res) {
               res.send('Hello from secondpage!')
             })
 
->* Laat de express app luisteren op poort 3000
+    * Laat de express app luisteren op poort 3000
 
             app.listen(3000, function () {
               console.log('Example app listening on port 3000!')
             })
 
-
->* Volledige code --> documentatie express get functie [https://expressjs.com/en/4x/api.html#app.get](https://expressjs.com/en/4x/api.html#app.get).
-
+    * Volledige code --> documentatie express get functie [https://expressjs.com/en/4x/api.html#app.get](https://expressjs.com/en/4x/api.html#app.get).
     
             var express = require('express')
             var app = express()
@@ -87,58 +84,52 @@
 
 4. Nu moeten we nog enkele zaken aanpassen aan de app.js
 
->* De path module laden
+    * De path module laden
 
-    var path = require('path');			//laad de path module
+            var path = require('path');			//laad de path module
 
+    * De express app instellen voor gebruik met views via app.set: [http://expressjs.com/en/api.html#app.set](http://expressjs.com/en/api.html#app.set)
 
->* De express app instellen voor gebruik met views via app.set: [http://expressjs.com/en/api.html#app.set](http://expressjs.com/en/api.html#app.set)
+            app.set('view engine', 'ejs');				//selecteer de view engine voor de app
+            app.set('views', path.join(__dirname, 'Views'));	//Stel de Views folder in als basis voor alle views
 
-        app.set('view engine', 'ejs');				//selecteer de view engine voor de app
-        app.set('views', path.join(__dirname, 'Views'));	//Stel de Views folder in als basis voor alle views
+    * render de view als response op een get request naar /
 
-
->* render de view als response op een get request naar /
-
-        app.get('/', function (req, res) {
-          res.render('Index');
-        })
-
-
-
-        var express = require('express')
-        var app = express()
-        var path = require('path');	
-        
-        app.set('view engine', 'ejs');
-        app.set('views', path.join(__dirname, 'Views'));
-        
-        app.get('/', function (req, res) {
-          res.render('Index');
-        })
-        
-        
-        app.get('/secondpage', function (req, res) {
-          res.send('Hello from secondpage!');
-        })
-        
-        
-        app.listen(3000, function () {
-          console.log('Example app listening on port 3000!')
-        })
-        })
-
+            app.get('/', function (req, res) {
+              res.render('Index');
+            })
+    
+    
+    
+            var express = require('express')
+            var app = express()
+            var path = require('path');	
+            
+            app.set('view engine', 'ejs');
+            app.set('views', path.join(__dirname, 'Views'));
+            
+            app.get('/', function (req, res) {
+              res.render('Index');
+            })
+            
+            
+            app.get('/secondpage', function (req, res) {
+              res.send('Hello from secondpage!');
+            })
+            
+            
+            app.listen(3000, function () {
+              console.log('Example app listening on port 3000!')
+            })
+            })
 
 5. De ejs module is echter nog niet geïnstalleerd. Dit kan via de command promt.
 
         npm install ejs 
-
  
 6. Start de app nu via de command prompt door het onderstaande commando.
- 
     
         node app.js
-
  
 7. Test of het werkt door naar **localhost:3000** te surfen
 #Mysql in app.js
