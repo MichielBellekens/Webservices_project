@@ -14,6 +14,7 @@ npm install express
 7. Kijk nu in uw project folder, hier zou een map **node_modules** moeten staan.
 8. Maak een javascript file aan in uw projectfolder, noem deze bijvoorbeeld **app.js**.
 9. Maak je eerste express app door volgend code in app.js te kopiëren
+
 >* de express module laden en een express app maken
 >```
 >var express = require('express')    //De express module laden
@@ -59,7 +60,9 @@ app.listen(3000, function () {
   console.log('Example app listening on port 3000!')
 })
 ```
+
 10. Run onderstaande commando in de commmand prompt.
+
 ```
     node app.js
 ```
@@ -87,6 +90,7 @@ app.listen(3000, function () {
 </html>
 ```
 4. Nu moeten we nog enkele zaken aanpassen aan de app.js
+
 >* De path module laden
 >```
 >var path = require('path');			//laad de path module
@@ -130,13 +134,17 @@ app.listen(3000, function () {
 })
 ```
 5. De ejs module is echter nog niet geïnstalleerd. Dit kan via de command promt.
+
  ```
 npm install ejs 
  ```
+ 
  6. Start de app nu via de command prompt door het onderstaande commando.
+ 
  ```
  node app.js
  ```
+ 
  7. Test of het werkt door naar **localhost:3000** te surfen
 #Mysql in app.js
 
