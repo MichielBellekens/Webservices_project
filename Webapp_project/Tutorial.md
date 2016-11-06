@@ -43,6 +43,7 @@ npm install express
 >```
 
 >* Volledige code --> documentatie express get functie [https://expressjs.com/en/4x/api.html#app.get](https://expressjs.com/en/4x/api.html#app.get).
+
 ```javascript
 var express = require('express')
 var app = express()
@@ -139,13 +140,13 @@ app.listen(3000, function () {
 npm install ejs 
  ```
  
- 6. Start de app nu via de command prompt door het onderstaande commando.
+6. Start de app nu via de command prompt door het onderstaande commando.
  
  ```
  node app.js
  ```
  
- 7. Test of het werkt door naar **localhost:3000** te surfen
+7. Test of het werkt door naar **localhost:3000** te surfen
 #Mysql in app.js
 
 #Apache2 instellingen
