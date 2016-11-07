@@ -214,12 +214,11 @@ app.post('/addnew', function(req,res){
     }
 });
 
-//log in and check the information provide by the user in the log in fields and create connection to the database
+//log in and check the information provide by the user in the log in fields
 app.post('/login', function(req,res){
     var mail = req.body.email;
     var passw = req.body.password;
     var querystring= "Select * FROM users where Mail = "+ connection.escape(mail);
-    connection.connect();
     console.log(querystring);
     connection.query(querystring,function(err,rows){
         if(err) throw err;
@@ -248,11 +247,10 @@ app.post('/login', function(req,res){
     });
 });
 
-//perform all actions to logout the user and close the connection to the database
+//perform all actions to logout the user
 app.get('/logout', function(req,res){
     activities = null;
     current_user_id =  null;
-    connection.end();
     res.redirect('/');
 });
 
