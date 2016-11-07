@@ -1,5 +1,7 @@
 /*
     TO DO
+    change session secret to env var
+        Globals wegwerken zoadat multiuser mogelijk is
         CHECK TO DO'S IN THE CODE
 		check voor connection.connect and connection.end
         CLEAN UP THE CODE
@@ -15,11 +17,12 @@ var path = require("path");                         //include path to be able to
 var bodyParser = require('body-parser');            //parser to get data from the inputfield of the view using post --> see express docs about req.body
 var app = expr();                                   //Creates an Express application.
 var hashing = require('password-hash-and-salt');    //include the hashin lib to hash and verify the passwords of the users
+var session = require('express-session');
 app.set("view engine", "ejs");                      //set the view engine to ejs for the app express application --> make templates possible
 app.set("views", path.join(__dirname, 'Views'));    //Point the views setting to the dir that contains all the project views
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(expr.static(__dirname + "/styles"));
-
+app.use(session({secret:"Mbellekens1995aqwzsxedc" ,resave:false, saveUnitialized:false}))
 //listen on an 1337 for all communication
 app.listen(1337,'0.0.0.0',function(){
     console.log('Ready on port 1337');
@@ -34,11 +37,11 @@ var connection = mysql.createConnection({
     database: 'webapp_todo'
 });
 
-var activities; //a variable to store the currently logged in users activities for all of the categories
-var current_user_id;    //variable to store the currently logged in user' id
+//var activities; //a variable to store the currently logged in users activities for all of the categories
+//var current_user_id;    //variable to store the currently logged in user' id
 var footer = "Michiel Bellekens webapplications & services @Thomas More Denayer Sint-Katelijne-Waver 2016";     //common footer for all the pages
 
-//function to load all the activities of the currently logged in user into the local variable activities
+/*//function to load all the activities of the currently logged in user into the local variable activities
 function load_activities(userid)
 {
     console.log("Loading all the activities ...");
@@ -48,7 +51,7 @@ function load_activities(userid)
         console.log(rows);
         activities = rows;
     });
-}
+}*/
 
 //All the values for the tabs
 var tabs = [
@@ -61,9 +64,10 @@ var tabs = [
 
 //the function to render a page when a get request is send to the root page --> the parameters are passed to fill the variable spots inside the view pages
 app.get('/', function(req,res){
+    console.log("the session userid =" + req.session.userid);
     res.render('Index',{
         title : "To do lists home page",
-        cur_user: current_user_id,
+        cur_user: req.session.userid,
         tab : tabs,
         footer: footer
     });
@@ -71,58 +75,77 @@ app.get('/', function(req,res){
 
 //function that renders the page after the school page is requested --> only accessible when the activiteis are loaded
 app.get('/school', function(req,res){
-    if (activities == null)
+    if (req.session.userid == null)
     {
         res.redirect('/');
     }
     else
     {
-        res.render('Tabs',{
-            title : "To do lists school",
-            tab : tabs,
-            Listitems: activities,
-            current_category : "school",
-            edit_id: null,
-            footer: footer
+        connection.query("SELECT * FROM activities WHERE userID="+req.session.userid,function(err,rows){
+            if(err) throw err;
+            console.log(rows);
+            //activities = rows;
+
+            res.render('Tabs',{
+                title : "To do lists school",
+                tab : tabs,
+                Listitems: rows,
+                current_category : "school",
+                edit_id: null,
+                footer: footer
+            });
         });
     }
 });
 
 //render the spare time tab
 app.get('/spare_time', function(req,res){
-    if (activities == null)
+    if (req.session.userid == null)
     {
         res.redirect('/');
     }
     else
     {
-        res.render('Tabs',{
-            title : "To do lists spare time",
-            tab : tabs,
-            Listitems: activities,
-            current_category : "spare_time",
-            edit_id: null,
-            footer: footer
+        connection.query("SELECT * FROM activities WHERE userID="+req.session.userid,function(err,rows){
+            if(err) throw err;
+            console.log(rows);
+            //activities = rows;
+
+            res.render('Tabs',{
+                title : "To do lists spare time",
+                tab : tabs,
+                Listitems: rows,
+                current_category : "spare_time",
+                edit_id: null,
+                footer: footer
+            });
         });
     }
 });
 
 //render the others page
 app.get('/others', function(req,res){
-    if (activities == null)
+    if (req.session.userid == null)
     {
         res.redirect('/');
     }
     else
     {
-        res.render('Tabs',{
-            title : "To do lists others",
-            tab : tabs,
-            Listitems: activities,
-            current_category : "others",
-            edit_id: null,
-            footer: footer
+        connection.query("SELECT * FROM activities WHERE userID="+req.session.userid,function(err,rows){
+            if(err) throw err;
+            console.log(rows);
+            //activities = rows;
+
+            res.render('Tabs',{
+                title : "To do lists others",
+                tab : tabs,
+                Listitems: rows,
+                current_category : "others",
+                edit_id: null,
+                footer: footer
+            });
         });
+
     }
 });
 
@@ -234,8 +257,9 @@ app.post('/login', function(req,res){
                 else
                 {
                     console.log("successfully logged in");
-                    load_activities(rows[0].ID);
-                    current_user_id = rows[0].ID;
+                    req.session.userid = rows[0].ID
+                    //load_activities(rows[0].ID);
+                    //current_user_id = rows[0].ID;
                     res.redirect('/school');
                 }
             });
@@ -251,6 +275,7 @@ app.post('/login', function(req,res){
 app.get('/logout', function(req,res){
     activities = null;
     current_user_id =  null;
+    req.session.destroy();
     res.redirect('/');
 });
 
