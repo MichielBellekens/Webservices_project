@@ -170,19 +170,75 @@ De variabele title en datum kunnen nu in de view worden gebruikt.
         
 4. Wanneer je nu naar localhost:3000 surft toont de pagina de titel Welkom pagina en de huidige datum.
 
+5. **<%= %>** wordt gebruikt om javascript elementen zoals variabele in de view te gebruiken. 
+Indien je in de view javascript code wilt uitvoeren maar niet rechtstreeks tonen in de view zoals bijvoorbeeld een for lus kan dit via **<% %>**.
 #Data uit views doorgeven aan app.js
 
 ##Get method
+
 1. Bij een get request kunnen we req.param() gebruiken om de parameters in te lezen.
- Wanneer er bijvoorbeeld een parameter id is meegegeven door /secondpage?id=1 kunnen we 
+ Wanneer er bijvoorbeeld een parameter id is meegegeven door **/secondpage?id=1** kunnen we 
  met onderstaande code deze parameter lezen en opslaan in een vatiabele
 
         var ID = req.param("id");
         
-        
+2. De get request uit app.js kan er dan als volgt uitzien. 
+ 
+        app.get('/secondpage', function (req, res) {
+          var ID = req.param("id");
+          res.render('Index',{
+              title: "Welkom op pagina 2 met id "+ID,
+              datum: new Date()
+          });
+        })
+
+3. Wanneer u nu surft naar **localhost:3000/secondpage?id=1** krijgt u de titel **Welkom op pagina 2 met id "opgegeven id"**. 
 ##Post method
-CONTINUE HERE
+
+1. Bij een post request moet je req.body gebruiken. 
+Om dit te kunnen gebruiken moeten we eerst body-parser installeren en laden.
+Documentatie zie [http://expressjs.com/en/4x/api.html#req.body](http://expressjs.com/en/4x/api.html#req.body)
+
+    * Voeg onderstaande lijnen toe aan app.js
+    
+           var bodyParser = require('body-parser');             //body parsing module laden
+           app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+2. De body-parser module moet nu nog worden geïnstalleerd. 
+Navigeer via de command prompt naar uw project map en type onderstaand commando.
+
+        npm install body-parser
+        
+3. Dit kan nu worden gebruikt op een gelijkaardige manier als bij de get request.
+id is de naam van het veld uit de ejs file die de post request stuurt.
+
+        var ID = req.body.id;
 #Mysql in app.js
+
+1. Open de command promt en installeer de mysql modules.
+
+        npm install mysql
+
+2. Voeg volgende lijnen toe aan app.js
+
+        var mysql      = require('mysql');  //mysql module laden
+        var connection = mysql.createConnection({
+          host     : 'localhost',           //database host
+          user     : 'me',                  //databse user
+          password : 'secret',              //database wachtwoord
+          database : 'my_db'                //database naam
+        });
+        
+3. Onderstaande code vraagt alle elementen uit de users database op.
+In de callback function wordt eerste nagekeken of er zich geen error heeft voorgedaan.
+Indien alles in orde is wordt de waarde uit de category kolom van de eerste rij naar de console geprint.
+
+        connection.query('SELECT * FROM users', function(err, rows, fields) {
+          if (err) throw err;
+         
+          console.log('The solution is: ', rows[0].category);
+        });
+        
 
 #Apache2 instellingen
 
@@ -200,3 +256,7 @@ CONTINUE HERE
 * Site van express webframework voor Node.js [http://expressjs.com/](http://expressjs.com/)
 * Initiële voorbeeldcode [http://expressjs.com/en/starter/hello-world.html](http://expressjs.com/en/starter/hello-world.html)
 * Instellingen variabele express app [http://expressjs.com/en/api.html#app.set](http://expressjs.com/en/api.html#app.set)
+* npm body-parser [https://www.npmjs.com/package/body-parser](https://www.npmjs.com/package/body-parser)
+* Getting values from get/post [https://scotch.io/tutorials/use-expressjs-to-get-url-and-post-parameters](https://scotch.io/tutorials/use-expressjs-to-get-url-and-post-parameters)
+* Mysql toevoegen aan project [https://codeforgeek.com/2015/01/nodejs-mysql-tutorial/](https://codeforgeek.com/2015/01/nodejs-mysql-tutorial/)
+* Mysql installeren en documentatie [https://www.npmjs.com/package/mysql](https://www.npmjs.com/package/mysql)

@@ -1,0 +1,7 @@
+How to recreate this project
+- Go to https://nodejs.org/en/ and download node js
+- Follow the installer further
+- Make a folder for your project 
+- open the command prompt and navigate to the project folder
+- Now typ in npm install express --> a folder node modules should be created
+- create a javascript file and call it app.js

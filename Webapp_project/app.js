@@ -1,6 +1,7 @@
 /*
     TO DO
         CHECK TO DO'S IN THE CODE
+		check voor connection.connect and connection.end
         CLEAN UP THE CODE
         REMOVE ALL OF THE CONSOLE.LOG() debug statements
         cREATE HTTPS INSTEAD OF HTTP
@@ -213,11 +214,12 @@ app.post('/addnew', function(req,res){
     }
 });
 
-//log in and check the information provide by the user in the log in fields
+//log in and check the information provide by the user in the log in fields and create connection to the database
 app.post('/login', function(req,res){
     var mail = req.body.email;
     var passw = req.body.password;
     var querystring= "Select * FROM users where Mail = "+ connection.escape(mail);
+    connection.connect();
     console.log(querystring);
     connection.query(querystring,function(err,rows){
         if(err) throw err;
@@ -246,10 +248,11 @@ app.post('/login', function(req,res){
     });
 });
 
-//perform all actions to logout the user
+//perform all actions to logout the user and close the connection to the database
 app.get('/logout', function(req,res){
     activities = null;
     current_user_id =  null;
+    connection.end();
     res.redirect('/');
 });
 
