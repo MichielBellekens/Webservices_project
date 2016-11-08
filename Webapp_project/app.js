@@ -22,7 +22,7 @@ app.set("view engine", "ejs");                      //set the view engine to ejs
 app.set("views", path.join(__dirname, 'Views'));    //Point the views setting to the dir that contains all the project views
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(expr.static(__dirname + "/styles"));
-app.use(session({secret:"Mbellekens1995aqwzsxedc" ,resave:false, saveUnitialized:false}))
+app.use(session({secret:"Mbellekens1995aqwzsxedc",saveUninitialized: false, resave: false}))
 //listen on an 1337 for all communication
 app.listen(1337,'0.0.0.0',function(){
     console.log('Ready on port 1337');
@@ -37,22 +37,18 @@ var connection = mysql.createConnection({
     database: 'webapp_todo'
 });
 
-//var activities; //a variable to store the currently logged in users activities for all of the categories
-//var current_user_id;    //variable to store the currently logged in user' id
 var footer = "Michiel Bellekens webapplications & services @Thomas More Denayer Sint-Katelijne-Waver 2016";     //common footer for all the pages
 
-/*//function to load all the activities of the currently logged in user into the local variable activities
-function load_activities(userid)
+
+//get all the values from the databse and pass them to a given callback function
+function load_from_database(userid, func)
 {
-    console.log("Loading all the activities ...");
-    console.log(current_user_id);
     connection.query("SELECT * FROM activities WHERE userID="+userid,function(err,rows){
         if(err) throw err;
         console.log(rows);
-        activities = rows;
+        func(rows);
     });
-}*/
-
+}
 //All the values for the tabs
 var tabs = [
     {link: "/", text : "Home"},
@@ -81,15 +77,14 @@ app.get('/school', function(req,res){
     }
     else
     {
-        connection.query("SELECT * FROM activities WHERE userID="+req.session.userid,function(err,rows){
-            if(err) throw err;
-            console.log(rows);
-            //activities = rows;
-
+        load_from_database(req.session.userid, function(items)
+        {
+            console.log("the items are"+items);
+            req.session.items = items;
             res.render('Tabs',{
                 title : "To do lists school",
                 tab : tabs,
-                Listitems: rows,
+                Listitems: items,
                 current_category : "school",
                 edit_id: null,
                 footer: footer
@@ -106,15 +101,13 @@ app.get('/spare_time', function(req,res){
     }
     else
     {
-        connection.query("SELECT * FROM activities WHERE userID="+req.session.userid,function(err,rows){
-            if(err) throw err;
-            console.log(rows);
-            //activities = rows;
-
+        load_from_database(req.session.userid, function(items)
+        {
+            req.session.items = items;
             res.render('Tabs',{
                 title : "To do lists spare time",
                 tab : tabs,
-                Listitems: rows,
+                Listitems: items,
                 current_category : "spare_time",
                 edit_id: null,
                 footer: footer
@@ -131,27 +124,24 @@ app.get('/others', function(req,res){
     }
     else
     {
-        connection.query("SELECT * FROM activities WHERE userID="+req.session.userid,function(err,rows){
-            if(err) throw err;
-            console.log(rows);
-            //activities = rows;
-
+        load_from_database(req.session.userid, function(items)
+        {
+            req.session.items = items;
             res.render('Tabs',{
                 title : "To do lists others",
                 tab : tabs,
-                Listitems: rows,
+                Listitems: items,
                 current_category : "others",
                 edit_id: null,
                 footer: footer
             });
         });
-
     }
 });
 
 //render the page to add an activity
 app.get('/add', function(req,res){
-    if (current_user_id == null)
+    if (req.session.userid == null)
     {
         res.redirect('/');
     }
@@ -167,73 +157,108 @@ app.get('/add', function(req,res){
 
 //render the page when the user wants to edit an item --> the id of the item that needs to be edited is passed
 app.get('/edit', function(req,res){
-    res.render('Tabs',{
-        title : "To do lists " +req.param("current_cat"),
-        tab : tabs,
-        Listitems: activities,
-        current_category : req.param("current_cat"),
-        edit_id: req.param("id"),
-        footer: footer
-    });
+    if (req.session.userid == null)
+    {
+        res.redirect('/');
+    }
+    else
+    {
+        res.render('Tabs',{
+            title : "To do lists " +req.param("current_cat"),
+            tab : tabs,
+            Listitems: req.session.items,
+            current_category : req.param("current_cat"),
+            edit_id: req.param("id"),
+            footer: footer
+        });
+    }
 });
 
 //is run when the delete link is pressed --> the get param are used to determine which element needs to be deleted
 app.get('/delete', function(req,res){
     console.log("entering the delete post");
-    var querystring = "DELETE FROM activities WHERE ID=" + connection.escape(req.param("id")) + " AND category= " + connection.escape(req.param("current_cat"));
-    console.log(querystring);
-    connection.query(querystring,function(err,rows){
-        if(err) throw err;
+    if (req.session.userid == null)
+    {
+        res.redirect('/');
+    }
+    else
+    {
+        var querystring = "DELETE FROM activities WHERE ID=" + connection.escape(req.param("id")) + " AND category= " + connection.escape(req.param("current_cat"));
+        console.log(querystring);
+        connection.query(querystring,function(err,rows){
+            if(err) throw err;
 
-        console.log('Data changed in Db:\n');
-        load_activities(current_user_id);
-        res.redirect(req.param("current_cat"));
-    });
+            console.log('Data changed in Db:\n');
+            load_from_database(req.session.userid, function(items) {
+                req.session.items = items;
+                res.redirect(req.param("current_cat"));
+            });
+        });
+    }
 });
 
 //save the edited information to the database and reload the local variable activities
 app.post('/edit', function(req,res){
     console.log("entering the edit post");
-    var id = req.body.ID;
-    var newmsg = req.body.change_value;
-    console.log(id);
-    console.log(newmsg);
-    connection.query("UPDATE activities SET Value ="+connection.escape(req.body.change_value)+" WHERE ID=" +req.body.ID,function(err,rows){
+    if (req.session.userid == null)
+    {
+        res.redirect('/');
+    }
+    else
+    {
+        var id = req.body.ID;
+        var newmsg = req.body.change_value;
+        console.log(id);
+        console.log(newmsg);
+        connection.query("UPDATE activities SET Value ="+connection.escape(req.body.change_value)+" WHERE ID=" +req.body.ID,function(err,rows){
             if(err) throw err;
 
             console.log('Data changed in Db:\n');
-        connection.query("SELECT category FROM activities WHERE ID="+req.body.ID,function(err,rows){
-            if(err) throw err;
+            connection.query("SELECT category FROM activities WHERE ID="+req.body.ID,function(err,rows){
+                if(err) throw err;
 
-            console.log('Data received from Db:\n');
-            console.log(rows);
-            res.redirect(rows[0].category);
-            load_activities(current_user_id);
+                console.log('Data received from Db:\n');
+                console.log(rows);
+                load_from_database(req.session.userid, function(items)
+                {
+                    req.session.items = items;
+                    res.redirect(rows[0].category);
+                });
             });
         });
+    }
 });
 
 //save the newly added value to the database and reload the local variable activities
 app.post('/addnew', function(req,res){
-    console.log("entering the new post");
-    var cat = req.body.Category_select;
-    var newdes = req.body.Task_description;
-    if(newdes == "")
+    if (req.session.userid == null)
     {
-        res.redirect(cat);
+        res.redirect('/');
     }
     else
     {
-        console.log(cat);
-        console.log(newdes);
-        var querystring= "INSERT INTO activities (category,Value,userID) VALUES ("+connection.escape(cat)+","+connection.escape(newdes)+","+current_user_id+")";
-        console.log(querystring);
-        connection.query(querystring,function(err,rows){
-            if(err) throw err;
-
-            load_activities(current_user_id);
+        console.log("entering the new post");
+        var cat = req.body.Category_select;
+        var newdes = req.body.Task_description;
+        if(newdes == "")
+        {
             res.redirect(cat);
-        });
+        }
+        else
+        {
+            console.log(cat);
+            console.log(newdes);
+            var querystring= "INSERT INTO activities (category,Value,userID) VALUES ("+connection.escape(cat)+","+connection.escape(newdes)+","+req.session.userid+")";
+            console.log(querystring);
+            connection.query(querystring,function(err,rows){
+                if(err) throw err;
+
+                load_from_database(req.session.userid, function(items)
+                {
+                    res.redirect(cat);
+                });
+            });
+        }
     }
 });
 
@@ -273,8 +298,8 @@ app.post('/login', function(req,res){
 
 //perform all actions to logout the user
 app.get('/logout', function(req,res){
-    activities = null;
-    current_user_id =  null;
+    req.session.userid = null;
+    req.session.items =  null;
     req.session.destroy();
     res.redirect('/');
 });
@@ -314,7 +339,7 @@ app.post('/create_account', function(req,res){
                     connection.query(querystring, function (err, rows) {
                         if(err) throw err;
 
-                        current_user_id = rows[0].ID;
+                        req.session.userid = rows[0].ID;
                         res.redirect('/school');
                     });
                     console.log("adding new account");
