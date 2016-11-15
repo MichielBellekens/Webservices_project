@@ -1,15 +1,14 @@
 <% include Base_elements/Header %>
-<body>
-<div class="container">
 <h1><%= title %></h1>
-<ul class="nav nav-tabs">
-    <% for (var i =0; i < tab.length;i++){%>
+<ul class="nav nav-pills">
+    <% for (var i =0; i < tab.length;i++){
+    if(current_category == tab[i].link){%>
+    <li role="presentation" class="active"><a href=<%=tab[i].link%>><%=tab[i].text %></a></li>
+    <%}
+    else{%>
     <li role="presentation"><a href=<%=tab[i].link%>><%=tab[i].text %></a></li>
-    <%}%>
-    <li>
-    <li>
-        <a class="btn btn-primary btn-xs" href="/logout">logout</a>
-    </li>
+    <%}}%>
+    <li><a class="btn btn-danger btn-xs" href="/logout">logout</a></li>
 </ul>
 <form action="/addnew" method="post">
     <div class="form-group">

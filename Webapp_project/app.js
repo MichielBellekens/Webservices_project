@@ -1,6 +1,8 @@
 /*
     TO DO
-    change session secret to env var
+		Make navtabs change active
+		code the footer static in the footer base element
+		change session secret to env var
         Globals wegwerken zoadat multiuser mogelijk is
         CHECK TO DO'S IN THE CODE
 		check voor connection.connect and connection.end
@@ -49,6 +51,7 @@ function load_from_database(userid, func)
         func(rows);
     });
 }
+
 //All the values for the tabs
 var tabs = [
     {link: "/", text : "Home"},
@@ -64,6 +67,7 @@ app.get('/', function(req,res){
     res.render('Index',{
         title : "To do lists home page",
         cur_user: req.session.userid,
+        current_category: "/",
         tab : tabs,
         footer: footer
     });
@@ -149,6 +153,7 @@ app.get('/add', function(req,res){
     {
         res.render('AddNew',{
             title : "Add new item",
+            current_category: "add",
             tab : tabs,
             footer: footer,
         });

@@ -1,11 +1,15 @@
 <% include Base_elements/Header %>
-<body>
-<div class="container">
 <h1><%= title %></h1>
 <ul class="nav nav-tabs">
-    <% for (var i =0; i < tab.length;i++){%>
+    <% for (var i =0; i < tab.length;i++){
+    if(current_category == tab[i].link)
+    {%>
+    <li role="presentation" class="active"><a href=<%=tab[i].link%>><%=tab[i].text %></a></li>
+    <%}
+    else
+    {%>
     <li role="presentation"><a href=<%=tab[i].link%>><%=tab[i].text %></a></li>
-    <%}%>
+    <%}}%>
     <%if(cur_user == null){%>
     <li>
         <form class="form-inline" action="/login" method="post">
@@ -25,7 +29,7 @@
     </li>
     <%}else{%>
     <li>
-        <a class="btn btn-default" href="/logout">logout</a>
+        <a class="btn btn-danger" href="/logout">logout</a>
     </li>
     <%}%>
 </ul>
