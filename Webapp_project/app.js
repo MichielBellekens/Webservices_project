@@ -1,15 +1,10 @@
 /*
     TO DO
-		Make navtabs change active
-		code the footer static in the footer base element
 		change session secret to env var
-        Globals wegwerken zoadat multiuser mogelijk is
         CHECK TO DO'S IN THE CODE
 		check voor connection.connect and connection.end
         CLEAN UP THE CODE
         REMOVE ALL OF THE CONSOLE.LOG() debug statements
-        cREATE HTTPS INSTEAD OF HTTP
-        SECURITY ANDCERTIFICATES
         CHECK IF VIEWs ARE VALID HTML
         CHECK IF THE TYPE OF THE MAIL ADDRESS IS VALID (--> REGEX)
         CLEAN UP THE COMMENTS
@@ -39,7 +34,6 @@ var connection = mysql.createConnection({
     database: 'webapp_todo'
 });
 
-var footer = "Michiel Bellekens webapplications & services @Thomas More Denayer Sint-Katelijne-Waver 2016";     //common footer for all the pages
 
 
 //get all the values from the databse and pass them to a given callback function
@@ -68,8 +62,7 @@ app.get('/', function(req,res){
         title : "To do lists home page",
         cur_user: req.session.userid,
         current_category: "/",
-        tab : tabs,
-        footer: footer
+        tab : tabs
     });
 });
 
@@ -90,8 +83,7 @@ app.get('/school', function(req,res){
                 tab : tabs,
                 Listitems: items,
                 current_category : "school",
-                edit_id: null,
-                footer: footer
+                edit_id: null
             });
         });
     }
@@ -113,8 +105,7 @@ app.get('/spare_time', function(req,res){
                 tab : tabs,
                 Listitems: items,
                 current_category : "spare_time",
-                edit_id: null,
-                footer: footer
+                edit_id: null
             });
         });
     }
@@ -136,8 +127,7 @@ app.get('/others', function(req,res){
                 tab : tabs,
                 Listitems: items,
                 current_category : "others",
-                edit_id: null,
-                footer: footer
+                edit_id: null
             });
         });
     }
@@ -154,8 +144,7 @@ app.get('/add', function(req,res){
         res.render('AddNew',{
             title : "Add new item",
             current_category: "add",
-            tab : tabs,
-            footer: footer,
+            tab : tabs
         });
     }
 })
@@ -173,8 +162,7 @@ app.get('/edit', function(req,res){
             tab : tabs,
             Listitems: req.session.items,
             current_category : req.param("current_cat"),
-            edit_id: req.param("id"),
-            footer: footer
+            edit_id: req.param("id")
         });
     }
 });
@@ -313,8 +301,7 @@ app.get('/logout', function(req,res){
 app.get('/create_account', function(req,res){
     res.render('create_account',{
         title : "Create a new account",
-        tab : tabs,
-        footer: footer
+        tab : tabs
     });
 });
 
