@@ -214,12 +214,60 @@ id is de naam van het veld uit de ejs file die de post request stuurt.
 
         var ID = req.body.id;
 #Mysql in app.js
+1. Installeer mysql op raspberry pi (voor windows download mysql workbench)
 
-1. Open de command promt en installeer de mysql modules.
+        sudo apt-get install mysql-server
+        
+    * Tijdens de installatie zal je een wachtwoord moeten ingeven voor de root user.
+
+2. Log in op de mysql server.
+
+        mysql -p -u root
+        
+    * Je wordt gevraagd het wachtwoord uit stap 1 op te geven.
+    * Als alles correct is verlopen ben je nu ingelogd. Je krijgt onderstaand scherm te zien
+    
+            Welcome to the MySQL monitor.  Commands end with ; or \g.
+            Your MySQL connection id is 4
+            Server version: 5.7.13 MySQL Community Server (GPL)
+            
+            Copyright (c) 2000, 2016, Oracle and/or its affiliates. All rights reserved.
+            
+            Oracle is a registered trademark of Oracle Corporation and/or its
+            affiliates. Other names may be trademarks of their respective
+            owners.
+            
+            Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+            
+            mysql> 
+            
+3. Maak een database aan voor je project. Geeft de database een duidelijke naam.
+
+        CREATE DATABASE MY_DATABASE_NAME;
+        
+4. Gebruik de gewenste database
+
+        USE MY_DATABASE_NAME
+        
+5. Maak de nodige tabellen aan.
+
+       CREATE TABLE TABLE_NAME
+       (
+         id              INT unsigned NOT NULL AUTO_INCREMENT, # Unique ID for the record
+         name            VARCHAR(150) NOT NULL,                # Name
+         birth           DATE NOT NULL,                        # Birthday
+         PRIMARY KEY     (id)                                  # Make the id the primary key
+       ); 
+       
+6. Sluit MySQL af.
+
+        quit
+        
+7. Open de command promt/terminal en ga naar de projectdir en installeer de mysql modules.
 
         npm install mysql
 
-2. Voeg volgende lijnen toe aan app.js
+8. Voeg volgende lijnen toe aan app.js
 
         var mysql      = require('mysql');  //mysql module laden
         var connection = mysql.createConnection({
@@ -229,7 +277,7 @@ id is de naam van het veld uit de ejs file die de post request stuurt.
           database : 'my_db'                //database naam
         });
         
-3. Onderstaande code vraagt alle elementen uit de users database op.
+9. Onderstaande code vraagt alle elementen uit de users database op.
 In de callback function wordt eerste nagekeken of er zich geen error heeft voorgedaan.
 Indien alles in orde is wordt de waarde uit de category kolom van de eerste rij naar de console geprint.
 
@@ -242,13 +290,121 @@ Indien alles in orde is wordt de waarde uit de category kolom van de eerste rij 
 
 #Apache2 instellingen
 
+1. Installeer Apache2.
+
+        sudo apt-get install apache2
+        
+2. test of de installatie is gelukt door naar het ip adres van je raspberry pi te surfen
+via een ander computer op hetzelfde netwerk. Indien alles correct is verlopen krijgt u de
+standaard webpagina te zien.
+
+3. Ga via de terminal naar de /etc/apache2/sites-available directory and create a new
+conf file like test.conf .
+
+4. Activeer de nodige modules voor proxy en SSL in apache via de terminal.
+
+        sudo a2enmod ssl        //activeer de ssl module
+        sudo a2enmod proxy      //activeer de proxy module --> managen van proxyrequests
+        sudo a2enmod proxy_http //nodig om via http en https documenten op te halen
+        
+5. Open het net aangemaakte document en bouw de conf file op. (grotendeels overgenomen van [http://www.codingtricks.biz/run-nodejs-application-apache/](http://www.codingtricks.biz/run-nodejs-application-apache/))
+    * Stel de server informatie in
+
+            <VirtualHost *:443>
+               ServerAdmin webmaster@localhost      //contact adres dat de server mee terugstuurd bij een error message
+               ServerName todolists.tk              //De naam waarmee de server zichzelf kan identificeren
+               ServerAlias www.todolists.tk         //alternatieve naam voor de host
+
+    * Selecteer de gewenste root directory voor de server
+    
+            DocumentRoot /home/pi/Documents/PROJECT_DIR
+    
+    * Stel directives in voor de rootdir
+    
+               <Directory />
+                  Options -Indexes +FollowSymLinks  //Selecteer beschikbare server features, geen Indexes en wel symbolische links
+                  AllowOverride None        //disable .htaccess files (distributed config files)
+                  Require all granted       //grant access to all requests
+               </Directory>
+            
+    * Proxy instellen
+    
+               ProxyRequests Off    //mag niet als forward proxy server dienen
+               ProxyPreserveHost On //de Hostname van de request wordt naar de proxyhost gestuurd i.p.V. de hostname uit proxypass
+               ProxyVia Full        //header lijn heeft extra apache httpd server version als een via (comment veld)
+               <Proxy *>
+                  Require all granted   //geef iedere request toegang tot de proxy
+               </Proxy>
+               
+   * Stel SSL in --> zie ook Letsencrypt titel (mod_ssl)
+   
+            SSLProxyEngine on	//Gebruik de SSL proxy engine
+            SSLEngine on        //Gebruik de SSL engine
+            SSLCertificateFile /etc/letsencrypt/live/YOUR_DOMAIN_NAME/cert.pem  //wijst naar de file met de certificate data
+            SSLCertificateKeyFile /etc/letsencrypt/live/YOUR_DOMAIN_NAME/privkey.pem    //Wijst naar de file met de private key voor de server
+            SSLCertificateChainFile /etc/letsencrypt/live/YOUR_DOMAIN_NAME/chain.pem    //wijst naar de file die de certificate chain bevat
+            
+    * Maak de stel de proxy verder in.
+    
+               <Location />     //match het extern pad dat we willen gebruiken
+                  ProxyPass http://127.0.0.1:1337/          //pass externe naar interne server
+                  ProxyPassReverse http://127.0.0.1:1337/   //pass van interne server naar extern
+               </Location>
+               
+   * Instellingen voor errors en sluit de virtualhost af.
+   
+               ErrorLog ${APACHE_LOG_DIR}/error.log     //zet de file waarnaar de server alle errors schrijft
+
+               LogLevel warn        //Zet het log level op warn
+            </VirtualHost>
+            
+    * Redirect van requests van poort 80 naar poort 443
+    
+            <VirtualHost *:80>
+               ServerAdmin webmaster@localhost
+               ServerName todolists.tk
+               ServerAlias www.todolists.tk
+            
+               Redirect permanent  / https://www.todolists.tk   //alle requests doorsturen naar https (poort 443)
+            
+            </VirtualHost>
+            
+6. Activeer onze conf file en deactiveer de andere
+
+        sudo a2ensite todo.conf             //activeer onze conf
+        sudo a2dissite 000-default.conf     //Deactiveer de default conf
+        
+7. Restart Apache om de wijzigingen door te voeren.
+
+        sudo service apache2 restart
 #Letsencrypt 
+1. Installeer certbot
+
+        sudo apt-get install python-certbot-apache -t jessie-backports
+        
+2. Maak een certificate via certbot
+
+        certbot --apache certonly
+        
+    * Je zal enkele zaken moeten opgeven zoals uw domeinnaam, ...
+
+3. Kijk het pad na dat is opgegeven in de apache conf file en pas dit indien nodig aan naar
+de plaats waar uw certificaten zijn opgeslagen.
 
 
+# Gebruikte Node modules
 
+##Express module 
+[https://www.npmjs.com/package/express](https://www.npmjs.com/package/express)
 
+##Body-parser module 
+[https://www.npmjs.com/package/body-parser](https://www.npmjs.com/package/body-parser)
 
+##Password-hash-and-salt
+[https://www.npmjs.com/package/password-hash-and-salt](https://www.npmjs.com/package/password-hash-and-salt)
 
+##Express-session
+[https://www.npmjs.com/package/express-session](https://www.npmjs.com/package/express-session)
 
 # Bronnen
 * Hoofdbron voor opstart: [https://www.youtube.com/watch?v=QseHOX-5nJQ](https://www.youtube.com/watch?v=QseHOX-5nJQ)
@@ -259,4 +415,10 @@ Indien alles in orde is wordt de waarde uit de category kolom van de eerste rij 
 * npm body-parser [https://www.npmjs.com/package/body-parser](https://www.npmjs.com/package/body-parser)
 * Getting values from get/post [https://scotch.io/tutorials/use-expressjs-to-get-url-and-post-parameters](https://scotch.io/tutorials/use-expressjs-to-get-url-and-post-parameters)
 * Mysql toevoegen aan project [https://codeforgeek.com/2015/01/nodejs-mysql-tutorial/](https://codeforgeek.com/2015/01/nodejs-mysql-tutorial/)
-* Mysql installeren en documentatie [https://www.npmjs.com/package/mysql](https://www.npmjs.com/package/mysql)
+* Mysql installeren nodejs en documentatie [https://www.npmjs.com/package/mysql](https://www.npmjs.com/package/mysql)
+* Mysql opzetten [http://dev.mysql.com/doc/mysql-getting-started/en/](http://dev.mysql.com/doc/mysql-getting-started/en/)
+* Mysql installeren op raspberry pi [http://www.raspberry-projects.com/pi/software_utilities/web-servers/mysql](http://www.raspberry-projects.com/pi/software_utilities/web-servers/mysql)
+* Apache config [http://www.codingtricks.biz/run-nodejs-application-apache/](http://www.codingtricks.biz/run-nodejs-application-apache/)
+* Apache website, meerdere pagina's van deze site zijn zeer handig voor het maken en begrijpen van de configuratie. [http://httpd.apache.org/docs/current/sections.html](http://httpd.apache.org/docs/current/sections.html)
+* Maak een gratis domeinnaam aan [http://www.dot.tk/nl/index.html?lang=nl](http://www.dot.tk/nl/index.html?lang=nl)
+* installatie npm modules en gebruik [https://www.npmjs.com/](https://www.npmjs.com/)
