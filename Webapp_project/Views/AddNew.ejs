@@ -11,6 +11,7 @@
     <li><a class="btn btn-danger btn-xs" href="/logout">logout</a></li>
 </ul>
 <form action="/addnew" method="post">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
     <div class="form-group">
         <label for="Category_select">Category</label>
         <select name="Category_select" id="Category_select" class="form-control">

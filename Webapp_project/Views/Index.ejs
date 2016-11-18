@@ -13,6 +13,7 @@
     <%if(cur_user == null){%>
     <li>
         <form class="form-inline" action="/login" method="post">
+            <input type="hidden" name="_csrf" value="<%= csrf %>">
             <div class="form-group">
                 <label class="sr-only" for="exampleInputEmail3">Email address</label>
                 <input name="email" class="form-control" id="exampleInputEmail3" placeholder="Email">

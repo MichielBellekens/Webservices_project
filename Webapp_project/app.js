@@ -15,11 +15,13 @@ var bodyParser = require('body-parser');            //parser to get data from th
 var app = expr();                                   //Creates an Express application.
 var hashing = require('password-hash-and-salt');    //include the hashin lib to hash and verify the passwords of the users
 var session = require('express-session');
+var csrf = require('csurf');
 app.set("view engine", "ejs");                      //set the view engine to ejs for the app express application --> make templates possible
 app.set("views", path.join(__dirname, 'Views'));    //Point the views setting to the dir that contains all the project views
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(expr.static(__dirname + "/styles"));
 app.use(session({secret:"Mbellekens1995aqwzsxedc",saveUninitialized: false, resave: false}))
+app.use(csrf());
 //listen on an 1337 for all communication
 app.listen(1337,'0.0.0.0',function(){
     console.log('Ready on port 1337');
@@ -62,7 +64,8 @@ app.get('/', function(req,res){
         title : "To do lists home page",
         cur_user: req.session.userid,
         current_category: "/",
-        tab : tabs
+        tab : tabs,
+        csrf: req.csrfToken()
     });
 });
 
@@ -83,7 +86,8 @@ app.get('/school', function(req,res){
                 tab : tabs,
                 Listitems: items,
                 current_category : "school",
-                edit_id: null
+                edit_id: null,
+                csrf: req.csrfToken()
             });
         });
     }
@@ -105,7 +109,8 @@ app.get('/spare_time', function(req,res){
                 tab : tabs,
                 Listitems: items,
                 current_category : "spare_time",
-                edit_id: null
+                edit_id: null,
+                csrf: req.csrfToken()
             });
         });
     }
@@ -127,7 +132,8 @@ app.get('/others', function(req,res){
                 tab : tabs,
                 Listitems: items,
                 current_category : "others",
-                edit_id: null
+                edit_id: null,
+                csrf: req.csrfToken()
             });
         });
     }
@@ -144,7 +150,8 @@ app.get('/add', function(req,res){
         res.render('AddNew',{
             title : "Add new item",
             current_category: "add",
-            tab : tabs
+            tab : tabs,
+            csrf: req.csrfToken()
         });
     }
 })
@@ -162,7 +169,8 @@ app.get('/edit', function(req,res){
             tab : tabs,
             Listitems: req.session.items,
             current_category : req.param("current_cat"),
-            edit_id: req.param("id")
+            edit_id: req.param("id"),
+            csrf: req.csrfToken()
         });
     }
 });
@@ -176,7 +184,7 @@ app.get('/delete', function(req,res){
     }
     else
     {
-        var querystring = "DELETE FROM activities WHERE ID=" + connection.escape(req.param("id")) + " AND category= " + connection.escape(req.param("current_cat"));
+        var querystring = "DELETE FROM activities WHERE userID="+req.session.userid+" AND ID=" + connection.escape(req.param("id")) + " AND category= " + connection.escape(req.param("current_cat"));
         console.log(querystring);
         connection.query(querystring,function(err,rows){
             if(err) throw err;
@@ -203,7 +211,7 @@ app.post('/edit', function(req,res){
         var newmsg = req.body.change_value;
         console.log(id);
         console.log(newmsg);
-        connection.query("UPDATE activities SET Value ="+connection.escape(req.body.change_value)+" WHERE ID=" +req.body.ID,function(err,rows){
+        connection.query("UPDATE activities SET Value ="+connection.escape(req.body.change_value)+" WHERE userID="+req.session.userid+" AND ID=" +req.body.ID,function(err,rows){
             if(err) throw err;
 
             console.log('Data changed in Db:\n');
@@ -301,7 +309,8 @@ app.get('/logout', function(req,res){
 app.get('/create_account', function(req,res){
     res.render('create_account',{
         title : "Create a new account",
-        tab : tabs
+        tab : tabs,
+        csrf: req.csrfToken()
     });
 });
 

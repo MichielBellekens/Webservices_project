@@ -19,6 +19,7 @@
         <% if(Listitems[i].ID == edit_id && edit_id != null )
             {%>
                 <form action="/edit" method="post">
+                    <input type="hidden" name="_csrf" value="<%= csrf %>">
                     <input name ="ID" type="hidden" value="<%= Listitems[i].ID%>">
                     <input name="change_value" type ="text" value="<%= Listitems[i].Value%>">
                     <button type="submit">Save changes</button>
