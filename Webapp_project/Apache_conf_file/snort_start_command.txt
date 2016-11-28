@@ -1,0 +1,2 @@
+//command to start snort on wlan 0 with the correct conf file --> alerts printed in console
+sudo snort -q -A console -i wlan0 -c /etc/snort/snort.conf
