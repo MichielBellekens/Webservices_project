@@ -13,6 +13,7 @@ body{
 }
 .alert-danger{
     float: none;
+    margin-top:10px;
 }
 
 .btn-danger:hover {
