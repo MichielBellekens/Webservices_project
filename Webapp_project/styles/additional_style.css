@@ -11,3 +11,10 @@ body{
     padding:0;
     margin-top: 15px;
 }
+.alert-danger{
+    float: none;
+}
+
+.btn-danger:hover {
+    background-color: #c12e2a !important;
+}
