@@ -34,6 +34,9 @@
     </li>
     <%}%>
 </ul>
+    <%if(Alert != null){%>
+        <div class="alert alert-danger col-md-offset-3 col-md-6" role="alert"><strong>Warning! </strong> <%= Alert%></div>
+    <%}%>
     <div class="row">
         <div class="panel panel-primary col-md-offset-3 col-md-6">
             <div class="panel-heading">Home page</div>

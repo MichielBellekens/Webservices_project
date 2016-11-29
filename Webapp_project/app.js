@@ -60,12 +60,17 @@ var tabs = [
 //the function to render a page when a get request is send to the root page --> the parameters are passed to fill the variable spots inside the view pages
 app.get('/', function(req,res){
     console.log("the session userid =" + req.session.userid);
+    if (req.session.userid != null)
+    {
+        req.session.alert = null;
+    }
     res.render('Index',{
         title : "To do lists home page",
         cur_user: req.session.userid,
         current_category: "/",
         tab : tabs,
-        csrf: req.csrfToken()
+        csrf: req.csrfToken(),
+        Alert: req.session.alert
     });
 });
 
@@ -73,12 +78,14 @@ app.get('/', function(req,res){
 app.get('/school', function(req,res){
     if (req.session.userid == null)
     {
+        req.session.alert = "Not yet logged in: log in to access the school tab";
         res.redirect('/');
     }
     else
     {
         load_from_database(req.session.userid, function(items)
         {
+            req.session.alert = null
             console.log("the items are"+items);
             req.session.items = items;
             res.render('Tabs',{
@@ -87,7 +94,8 @@ app.get('/school', function(req,res){
                 Listitems: items,
                 current_category : "school",
                 edit_id: null,
-                csrf: req.csrfToken()
+                csrf: req.csrfToken(),
+                Alert:req.session.alert
             });
         });
     }
@@ -97,10 +105,12 @@ app.get('/school', function(req,res){
 app.get('/spare_time', function(req,res){
     if (req.session.userid == null)
     {
+        req.session.alert = "Not yet logged in: log in to access the spare time tab";
         res.redirect('/');
     }
     else
     {
+        req.session.alert = null
         load_from_database(req.session.userid, function(items)
         {
             req.session.items = items;
@@ -110,7 +120,8 @@ app.get('/spare_time', function(req,res){
                 Listitems: items,
                 current_category : "spare_time",
                 edit_id: null,
-                csrf: req.csrfToken()
+                csrf: req.csrfToken(),
+                Alert:req.session.alert
             });
         });
     }
@@ -120,10 +131,12 @@ app.get('/spare_time', function(req,res){
 app.get('/others', function(req,res){
     if (req.session.userid == null)
     {
+        req.session.alert = "Not yet logged in: log in to access the others tab";
         res.redirect('/');
     }
     else
     {
+        req.session.alert = null
         load_from_database(req.session.userid, function(items)
         {
             req.session.items = items;
@@ -133,7 +146,8 @@ app.get('/others', function(req,res){
                 Listitems: items,
                 current_category : "others",
                 edit_id: null,
-                csrf: req.csrfToken()
+                csrf: req.csrfToken(),
+                Alert:req.session.alert
             });
         });
     }
@@ -143,6 +157,7 @@ app.get('/others', function(req,res){
 app.get('/add', function(req,res){
     if (req.session.userid == null)
     {
+        req.session.alert = "You can only add an item when you're logged in.";
         res.redirect('/');
     }
     else
@@ -151,7 +166,8 @@ app.get('/add', function(req,res){
             title : "Add new item",
             current_category: "add",
             tab : tabs,
-            csrf: req.csrfToken()
+            csrf: req.csrfToken(),
+            Alert:req.session.alert
         });
     }
 })
@@ -160,17 +176,20 @@ app.get('/add', function(req,res){
 app.get('/edit', function(req,res){
     if (req.session.userid == null)
     {
+        req.session.alert = "You need to be logged in to edit listitems";
         res.redirect('/');
     }
     else
     {
+        req.session.alert = null;
         res.render('Tabs',{
             title : "To do lists " +req.param("current_cat"),
             tab : tabs,
             Listitems: req.session.items,
             current_category : req.param("current_cat"),
             edit_id: req.param("id"),
-            csrf: req.csrfToken()
+            csrf: req.csrfToken(),
+            Alert:req.session.alert
         });
     }
 });
@@ -180,6 +199,7 @@ app.get('/delete', function(req,res){
     console.log("entering the delete post");
     if (req.session.userid == null)
     {
+        req.session.alert = "You need to be logged in to delete listitems";
         res.redirect('/');
     }
     else
@@ -203,10 +223,12 @@ app.post('/edit', function(req,res){
     console.log("entering the edit post");
     if (req.session.userid == null)
     {
+        req.session.alert = "You cannot post an edit request when you're not logged in";
         res.redirect('/');
     }
     else
     {
+        req.session.alert = null;
         var id = req.body.ID;
         var newmsg = req.body.change_value;
         console.log(id);
@@ -234,6 +256,7 @@ app.post('/edit', function(req,res){
 app.post('/addnew', function(req,res){
     if (req.session.userid == null)
     {
+        req.session.alert = "You need to be logged in to add a new listitem";
         res.redirect('/');
     }
     else
@@ -243,10 +266,12 @@ app.post('/addnew', function(req,res){
         var newdes = req.body.Task_description;
         if(newdes == "")
         {
-            res.redirect(cat);
+            req.session.alert = "Please fill the description field";
+            res.redirect('/add');
         }
         else
         {
+            req.session.alert = null;
             console.log(cat);
             console.log(newdes);
             var querystring= "INSERT INTO activities (category,Value,userID) VALUES ("+connection.escape(cat)+","+connection.escape(newdes)+","+req.session.userid+")";
@@ -277,12 +302,15 @@ app.post('/login', function(req,res){
             hashing(req.body.password).verifyAgainst(rows[0].Password, function(error, verified) {
                 if(error)
                     throw new Error('Failed to verify the password');
+                    req.session.alert = "Something went wrong when checking the password";
                 if(!verified) {
                     console.log("Not the correct password");
+                    req.session.alert = "You have entered an incorrect password";
                 }
                 else
                 {
                     console.log("successfully logged in");
+                    req.session.alert = null;
                     req.session.userid = rows[0].ID
                     //load_activities(rows[0].ID);
                     //current_user_id = rows[0].ID;
@@ -292,6 +320,7 @@ app.post('/login', function(req,res){
         }
         else
         {
+            req.session.alert = "The username/pasword combination you entered could not be found";
             res.redirect('/');
         }
     });
@@ -310,7 +339,8 @@ app.get('/create_account', function(req,res){
     res.render('create_account',{
         title : "Create a new account",
         tab : tabs,
-        csrf: req.csrfToken()
+        csrf: req.csrfToken(),
+        Alert: req.session.alert
     });
 });
 
@@ -321,12 +351,12 @@ app.post('/create_account', function(req,res){
     hashing(req.body.passwd).hash(function (error, hash) {
         if (error)
             throw new Error('Hashing produced an error');
-
+            req.session.alert = "Something went wrong while hashing the pasword, please try again";
         var querystring= "Select * FROM users where Mail = "+ connection.escape(mail);
         console.log(querystring);
         connection.query(querystring,function(err,rows){
             if(err) throw err;
-
+                req.session.alert = "An error occured while connecting to database";
             console.log(rows.length);
             if(rows.length == 0)
             {
@@ -341,6 +371,7 @@ app.post('/create_account', function(req,res){
                         if(err) throw err;
 
                         req.session.userid = rows[0].ID;
+                        req.session.alert = null;
                         res.redirect('/school');
                     });
                     console.log("adding new account");
@@ -349,7 +380,8 @@ app.post('/create_account', function(req,res){
             else
             {
                 console.log("The mail is already used");
-                res.redirect('/');
+                req.session.alert = "De ingegeven username is reeds gebruikt, probeer een andere username";
+                res.redirect('/create_account');
             }
         });
     });
