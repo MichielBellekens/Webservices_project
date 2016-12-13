@@ -15,12 +15,12 @@ var bodyParser = require('body-parser');            //parser to get data from th
 var app = expr();                                   //Creates an Express application.
 var hashing = require('password-hash-and-salt');    //include the hashin lib to hash and verify the passwords of the users
 var session = require('express-session');
-var csrf = require('csurf');
+var csrf = require('csurf');                        //module to prevent cross site request forgery attacks (csrf)
 app.set("view engine", "ejs");                      //set the view engine to ejs for the app express application --> make templates possible
 app.set("views", path.join(__dirname, 'Views'));    //Point the views setting to the dir that contains all the project views
 app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(expr.static(__dirname + "/styles"));
-app.use(session({secret:"Mbellekens1995aqwzsxedc",saveUninitialized: false, resave: false}))
+app.use(session({secret:"Mbellekens1995aqwzsxedc",saveUninitialized: false, resave: false}))    //use the session module and set some parameters
 app.use(csrf());
 //listen on an 1337 for all communication
 app.listen(1337,'0.0.0.0',function(){
