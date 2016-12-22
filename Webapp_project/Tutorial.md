@@ -287,7 +287,44 @@ Indien alles in orde is wordt de waarde uit de category kolom van de eerste rij 
           console.log('The solution is: ', rows[0].category);
         });
         
+# Cross site request forgery (CSRF attacks)
 
+1. Via node js is het relatief makkelijk om je webintrface the beveiligen tegen CSRF attacks via de csurf module. [https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html](https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html)
+
+        npm install csurf
+        
+2. Voeg onderstaande lijn toe om csurf te gebruiken
+
+        var csrf = require('csurf')
+        
+3. Pass onderstaande variabele via de render statements mee.
+    
+        csrf: req.csrfToken()
+        
+    * zoals onderstaand
+
+            res.render('Tabs',{
+                        title : "To do lists school",
+                        tab : tabs,
+                        Listitems: items,
+                        current_category : "school",
+                        edit_id: null,
+                        csrf: req.csrfToken(),
+                        Alert:req.session.alert
+                    });
+
+4. voeg vervolgens aan alle forms een hidden field toe met de waarde van de csrf token
+
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        
+5. Op deze manier worden csrf attack tegen gehouden door de csurf middleware module
+
+#Maak een domeinnaam
+1. Volg de stappen op: [http://www.dot.tk/nl/index.html](http://www.dot.tk/nl/index.html)
+
+2. Geef je extern ip adres in wanneer hier wordt om gevraagd.
+3. Port forward de nodige poorten (443 & 80, event 22 voor ssh) naar het intern statische ip van je raspberry pi.
+    1.  statisch ip adres instellen op raspberry pi [https://www.abelectronics.co.uk/kb/article/31/raspbian-jessie-static-ip-setup](https://www.abelectronics.co.uk/kb/article/31/raspbian-jessie-static-ip-setup)
 #Apache2 instellingen
 
 1. Installeer Apache2.
@@ -406,6 +443,11 @@ de plaats waar uw certificaten zijn opgeslagen.
 ##Express-session
 [https://www.npmjs.com/package/express-session](https://www.npmjs.com/package/express-session)
 
+##csurf
+* Maakt 
+ook gebruik van de session module --> zie documentatie
+[https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html](https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html)
+
 # Bronnen
 * Hoofdbron voor opstart: [https://www.youtube.com/watch?v=QseHOX-5nJQ](https://www.youtube.com/watch?v=QseHOX-5nJQ)
 * Site van Node.js [https://nodejs.org/en/](https://nodejs.org/en/)
@@ -422,3 +464,6 @@ de plaats waar uw certificaten zijn opgeslagen.
 * Apache website, meerdere pagina's van deze site zijn zeer handig voor het maken en begrijpen van de configuratie. [http://httpd.apache.org/docs/current/sections.html](http://httpd.apache.org/docs/current/sections.html)
 * Maak een gratis domeinnaam aan [http://www.dot.tk/nl/index.html?lang=nl](http://www.dot.tk/nl/index.html?lang=nl)
 * installatie npm modules en gebruik [https://www.npmjs.com/](https://www.npmjs.com/)
+* csurf als bescherming tegen csrf attacks [https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html](https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html)
+* Gratis domeinnaam [http://www.dot.tk/nl/index.html](http://www.dot.tk/nl/index.html)
+* Statisch ip instellen [https://www.abelectronics.co.uk/kb/article/31/raspbian-jessie-static-ip-setup](https://www.abelectronics.co.uk/kb/article/31/raspbian-jessie-static-ip-setup)
