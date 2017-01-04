@@ -428,7 +428,37 @@ conf file like test.conf .
 3. Kijk het pad na dat is opgegeven in de apache conf file en pas dit indien nodig aan naar
 de plaats waar uw certificaten zijn opgeslagen.
 
-
+# Automysqlbackup
+Om automatisch een back-up te nemen van de database met gebruikers en activiteiten gebruiken we automysqlbackup.
+ 1. Installeer automysqlbackup
+        
+        sudo apt-get install automysqlbackup
+         
+ 2. Pas de configuratie aan in /etc/default/automysqlbackup.
+ 
+        sudo nano /etc/default/automysqlbackup
+        
+    * DBNAMES = "DATABASE_NAME" --> de namen van de databases die je wilt back-uppen
+    * BACKUPDIR = "PATH_TO_BACKUP_DIR" --> het pad naar de directory waar de back-ups zullen worden opgeslagen
+    * USERNAME = DATABASE_USERNAME --> the username to access the database with
+    * PASSWORD = DATABASE_PASSWORD --> het wachtwoord om toegang te krijgen tot de database
+    
+ 3. Slaag deze file op en sluit deze.
+ 4. Run backup
+ 
+        automysqlbackup
+        
+ 5. Ga naar de dir die je hebt opgegeven als BACKUPDIR. Deze dir bevat nu 3 dir nl. daily, weekly en monthly.
+    In daily vind je mappen met de namen van de databases die je hebt geback-upt. 
+    Elk van deze mappen bevat een gecomprimeerde file waarin alles staat om de database opnieuw te creëren.
+    
+6. Maak een cronjob aan zodat het automysql commando periodisch wordt uitgevoerd.
+    
+        //Edit the current crontab (-e)
+        sudo crontab -e
+        
+        //voeg onderstaande lijn toe. --> maak een back-up om middernacht, elke dag van elke week van elke maand
+        0 0 * * * /usr/sbin/automysqlbackup
 # Gebruikte Node modules
 
 ##Express module 
@@ -467,3 +497,5 @@ ook gebruik van de session module --> zie documentatie
 * csurf als bescherming tegen csrf attacks [https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html](https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html)
 * Gratis domeinnaam [http://www.dot.tk/nl/index.html](http://www.dot.tk/nl/index.html)
 * Statisch ip instellen [https://www.abelectronics.co.uk/kb/article/31/raspbian-jessie-static-ip-setup](https://www.abelectronics.co.uk/kb/article/31/raspbian-jessie-static-ip-setup)
+* Automysqlbackup installeren [https://serverpilot.io/community/articles/how-to-back-up-mysql-databases-with-automysqlbackup.html](https://serverpilot.io/community/articles/how-to-back-up-mysql-databases-with-automysqlbackup.html)
+* Automysqlbackup configureren [https://serverpilot.io/community/articles/how-to-back-up-mysql-databases-with-automysqlbackup.html](https://serverpilot.io/community/articles/how-to-back-up-mysql-databases-with-automysqlbackup.html) 
