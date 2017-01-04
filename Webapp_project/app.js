@@ -1,13 +1,6 @@
 /*
     TO DO
-		change session secret to env var
-        CHECK TO DO'S IN THE CODE
-		check voor connection.connect and connection.end
-        CLEAN UP THE CODE
-        REMOVE ALL OF THE CONSOLE.LOG() debug statements
-        CHECK IF VIEWs ARE VALID HTML
-        CHECK IF THE TYPE OF THE MAIL ADDRESS IS VALID (--> REGEX)
-        CLEAN UP THE COMMENTS
+    /
 */
 var expr =  require("express");                     //include express to make routing possible
 var path = require("path");                         //include path to be able to get the current dir
@@ -42,9 +35,15 @@ var connection = mysql.createConnection({
 function load_from_database(userid, func)
 {
     connection.query("SELECT * FROM activities WHERE userID="+userid,function(err,rows){
-        if(err) throw err;
-        console.log(rows);
-        func(rows);
+        if(err)
+        {
+            req.session.alert = "An error occured while trying to get activities";
+            res.redirect('/');
+        }
+        else
+        {
+            func(rows);
+        }
     });
 }
 
@@ -59,7 +58,6 @@ var tabs = [
 
 //the function to render a page when a get request is send to the root page --> the parameters are passed to fill the variable spots inside the view pages
 app.get('/', function(req,res){
-    console.log("the session userid =" + req.session.userid);
     if (req.session.userid != null)
     {
         req.session.alert = null;
@@ -86,7 +84,6 @@ app.get('/school', function(req,res){
         load_from_database(req.session.userid, function(items)
         {
             req.session.alert = null
-            console.log("the items are"+items);
             req.session.items = items;
             res.render('Tabs',{
                 title : "To do lists school",
@@ -196,7 +193,6 @@ app.get('/edit', function(req,res){
 
 //is run when the delete link is pressed --> the get param are used to determine which element needs to be deleted
 app.get('/delete', function(req,res){
-    console.log("entering the delete post");
     if (req.session.userid == null)
     {
         req.session.alert = "You need to be logged in to delete listitems";
@@ -205,22 +201,25 @@ app.get('/delete', function(req,res){
     else
     {
         var querystring = "DELETE FROM activities WHERE userID="+req.session.userid+" AND ID=" + connection.escape(req.param("id")) + " AND category= " + connection.escape(req.param("current_cat"));
-        console.log(querystring);
         connection.query(querystring,function(err,rows){
-            if(err) throw err;
-
-            console.log('Data changed in Db:\n');
-            load_from_database(req.session.userid, function(items) {
-                req.session.items = items;
+            if(err)
+            {
+                req.session.alert = "An error occured while trying to delete the item";
                 res.redirect(req.param("current_cat"));
-            });
+            }
+            else
+            {
+                load_from_database(req.session.userid, function(items) {
+                    req.session.items = items;
+                    res.redirect(req.param("current_cat"));
+                });
+            }
         });
     }
 });
 
 //save the edited information to the database and reload the local variable activities
 app.post('/edit', function(req,res){
-    console.log("entering the edit post");
     if (req.session.userid == null)
     {
         req.session.alert = "You cannot post an edit request when you're not logged in";
@@ -231,23 +230,30 @@ app.post('/edit', function(req,res){
         req.session.alert = null;
         var id = req.body.ID;
         var newmsg = req.body.change_value;
-        console.log(id);
-        console.log(newmsg);
         connection.query("UPDATE activities SET Value ="+connection.escape(req.body.change_value)+" WHERE userID="+req.session.userid+" AND ID=" +req.body.ID,function(err,rows){
-            if(err) throw err;
-
-            console.log('Data changed in Db:\n');
-            connection.query("SELECT category FROM activities WHERE ID="+req.body.ID,function(err,rows){
-                if(err) throw err;
-
-                console.log('Data received from Db:\n');
-                console.log(rows);
-                load_from_database(req.session.userid, function(items)
-                {
-                    req.session.items = items;
-                    res.redirect(rows[0].category);
+            if(err)
+            {
+                req.session.alert = "An error occured while trying to update the item";
+                res.redirect('/');
+            }
+            else
+            {
+                connection.query("SELECT category FROM activities WHERE ID="+req.body.ID,function(err,rows){
+                    if(err)
+                    {
+                        req.session.alert = "An error occured while trying to get updated items";
+                        res.redirect('/');
+                    }
+                    else
+                    {
+                        load_from_database(req.session.userid, function(items)
+                        {
+                            req.session.items = items;
+                            res.redirect(rows[0].category);
+                        });
+                    }
                 });
-            });
+            }
         });
     }
 });
@@ -261,7 +267,6 @@ app.post('/addnew', function(req,res){
     }
     else
     {
-        console.log("entering the new post");
         var cat = req.body.Category_select;
         var newdes = req.body.Task_description;
         if(newdes == "")
@@ -272,17 +277,20 @@ app.post('/addnew', function(req,res){
         else
         {
             req.session.alert = null;
-            console.log(cat);
-            console.log(newdes);
             var querystring= "INSERT INTO activities (category,Value,userID) VALUES ("+connection.escape(cat)+","+connection.escape(newdes)+","+req.session.userid+")";
-            console.log(querystring);
             connection.query(querystring,function(err,rows){
-                if(err) throw err;
-
-                load_from_database(req.session.userid, function(items)
+                if(err)
                 {
-                    res.redirect(cat);
-                });
+                    req.session.alert = "An error occured while trying to add new item to database";
+                    res.redirect('/');
+                }
+                else
+                {
+                    load_from_database(req.session.userid, function(items)
+                    {
+                        res.redirect(cat);
+                    });
+                }
             });
         }
     }
@@ -293,35 +301,41 @@ app.post('/login', function(req,res){
     var mail = req.body.email;
     var passw = req.body.password;
     var querystring= "Select * FROM users where Mail = "+ connection.escape(mail);
-    console.log(querystring);
     connection.query(querystring,function(err,rows){
-        if(err) throw err;
-
-        if(rows.length == 1)
+        if(err)
         {
-            hashing(req.body.password).verifyAgainst(rows[0].Password, function(error, verified) {
-                if(error)
-                    throw new Error('Failed to verify the password');
-                    req.session.alert = "Something went wrong when checking the password";
-                if(!verified) {
-                    console.log("Not the correct password");
-                    req.session.alert = "You have entered an incorrect password";
-                }
-                else
-                {
-                    console.log("successfully logged in");
-                    req.session.alert = null;
-                    req.session.userid = rows[0].ID
-                    //load_activities(rows[0].ID);
-                    //current_user_id = rows[0].ID;
-                    res.redirect('/school');
-                }
-            });
+            req.session.alert = "An error occured while trying to get usernames";
+            res.redirect('/');
         }
         else
         {
-            req.session.alert = "The username/pasword combination you entered could not be found";
-            res.redirect('/');
+            if(rows.length == 1)
+            {
+                hashing(req.body.password).verifyAgainst(rows[0].Password, function(error, verified) {
+                    if(error)
+                    {
+                        req.session.alert = "An error occured while verifying the password";
+                        res.redirect('/');
+                    }
+                    else if(!verified) {
+                        req.session.alert = "You have entered an incorrect password";
+                        res.redirect('/');
+                    }
+                    else
+                    {
+                        req.session.alert = null;
+                        req.session.userid = rows[0].ID
+                        //load_activities(rows[0].ID);
+                        //current_user_id = rows[0].ID;
+                        res.redirect('/school');
+                    }
+                });
+            }
+            else
+            {
+                req.session.alert = "The username/pasword combination you entered could not be found";
+                res.redirect('/');
+            }
         }
     });
 });
@@ -345,44 +359,50 @@ app.get('/create_account', function(req,res){
 });
 
 //Saves the new account --> checks if the mail is allready used in another account
-//TO DO ==>  CHECK IF NONE OF THE FIELDS ARE EMPTY
 app.post('/create_account', function(req,res){
-    var mail = req.body.Mailaddress;
-    hashing(req.body.passwd).hash(function (error, hash) {
-        if (error)
-            throw new Error('Hashing produced an error');
-            req.session.alert = "Something went wrong while hashing the pasword, please try again";
-        var querystring= "Select * FROM users where Mail = "+ connection.escape(mail);
-        console.log(querystring);
-        connection.query(querystring,function(err,rows){
-            if(err) throw err;
-                req.session.alert = "An error occured while connecting to database";
-            console.log(rows.length);
-            if(rows.length == 0)
+    if(req.body.Mailaddress == "" || req.body.passwd == ""){
+        req.session.alert = "You need to fill in both fields";
+        res.redirect('/create_account');
+    }
+    else
+    {
+        var mail = req.body.Mailaddress;
+        hashing(req.body.passwd).hash(function (error, hash) {
+            if (error)
             {
-                console.log("Entering creation loop");
-                querystring = "INSERT INTO users (Mail, Password) VALUES ("+connection.escape(mail)+",'"+hash+"')";
-                connection.query(querystring, function(err, rows)
-                {
-                    if(err) throw err;
-
-                    querystring = "SELECT * FROM users where Mail="+connection.escape(mail);
-                    connection.query(querystring, function (err, rows) {
-                        if(err) throw err;
-
-                        req.session.userid = rows[0].ID;
-                        req.session.alert = null;
-                        res.redirect('/school');
-                    });
-                    console.log("adding new account");
-                });
+                req.session.alert = "An error occured while hashing your password";
+                res.redirect('/');
             }
             else
             {
-                console.log("The mail is already used");
-                req.session.alert = "De ingegeven username is reeds gebruikt, probeer een andere username";
-                res.redirect('/create_account');
+                var querystring= "Select * FROM users where Mail = "+ connection.escape(mail);
+                connection.query(querystring,function(err,rows){
+                    if(err) throw err;
+                    req.session.alert = "An error occured while connecting to database";
+                    if(rows.length == 0)
+                    {
+                        querystring = "INSERT INTO users (Mail, Password) VALUES ("+connection.escape(mail)+",'"+hash+"')";
+                        connection.query(querystring, function(err, rows)
+                        {
+                            if(err) throw err;
+
+                            querystring = "SELECT * FROM users where Mail="+connection.escape(mail);
+                            connection.query(querystring, function (err, rows) {
+                                if(err) throw err;
+
+                                req.session.userid = rows[0].ID;
+                                req.session.alert = null;
+                                res.redirect('/school');
+                            });
+                        });
+                    }
+                    else
+                    {
+                        req.session.alert = "De ingegeven username is reeds gebruikt, probeer een andere username";
+                        res.redirect('/create_account');
+                    }
+                });
             }
         });
-    });
+    }
 });
