@@ -1,13 +1,25 @@
-# Tutorial todolist webapp
+*Michiel Bellekens   2016-2017 Webservices*
+# Todolist webapp markdown
 
-##Node.js
-1. Ga naar [https://nodejs.org/en/](https://nodejs.org/en/) en download Node.js
-2. Volg de installer nadat deze is gedownload
-3. Maak een nieuwe map voor uw project
+## Inleiding
+
+Dit document omschrijft de benodigde stappen om met Node.JS een basis webservice te maken.
+In dit project wordt gebruik gemaakt van het Node.JS web framework express, bootstrap, de ejs view engine en nog enkele andere Node modules.   
+##Node.js installeren
+###Windows
+1. Ga naar [https://nodejs.org/en/](https://nodejs.org/en/) en download Node.js.
+2. Volg de installer nadat deze is gedownload.
+3. Maak een nieuwe map voor uw project.
+
+###Raspbian
+1. sudo apt-get install nodejs      
+2. sudo apt-get install npm
+3. Maak een nieuwe map voor uw project.
+
 
 ##Express framework
-1. In dit project wordt gebruik gemaakt van Express. Dit is een webapplication framework voor Node.js.
-2. open de command prompt en navigeer naar je projectmap en geef onderstaand commando in om de nodige node modules te installeren.
+1. In dit project wordt gebruik gemaakt van Express. Dit is een webapplication framework voor Node.js dat ondersteuning biedt voor onder andere routing.
+2. Open de command prompt/terminal, navigeer naar je projectmap en geef onderstaand commando in om de nodige node modules voor express te installeren.
 
         npm install express
         
@@ -16,52 +28,52 @@
 5. Maak een javascript file aan in uw projectfolder, noem deze bijvoorbeeld **app.js**.
 6. Maak je eerste express app door volgend code in app.js te kopiëren
 
-    * de express module laden en een express app maken
+    * De express module laden en een express app maken
 
-            var express = require('express')    //De express module laden
-            var app = express()                 //Een express app creëren
+            var express = require('express');    //De express module laden
+            var app = express();                 //Een express app creëren
 
-    * route maken die **Hello World!** als response geeft wanneer er een get request wordt gestuurd naar **localhost:3000/**
+    * Route maken die **Hello World!** als response geeft wanneer er een get request wordt gestuurd naar **localhost:3000/**
         
             app.get('/', function (req, res) {
-              res.send('Hello World!')
-            })
+              res.send('Hello World!');
+            });
     
-    * route maken die **Hello from secondpage!** als response geeft wanneer er een get request wordt gestuurd naar **localhost:3000//secondpage**
+    * Route maken die **Hello from secondpage!** als response geeft wanneer er een get request wordt gestuurd naar **localhost:3000//secondpage**
         
             app.get('/secondpage', function (req, res) {
-              res.send('Hello from secondpage!')
-            })
+              res.send('Hello from secondpage!');
+            });
 
     * Laat de express app luisteren op poort 3000
 
             app.listen(3000, function () {
-              console.log('Example app listening on port 3000!')
-            })
+              console.log('Example app listening on port 3000!');
+            });
 
     * Volledige code --> documentatie express get functie [https://expressjs.com/en/4x/api.html#app.get](https://expressjs.com/en/4x/api.html#app.get).
     
-            var express = require('express')
-            var app = express()
+            var express = require('express');
+            var app = express();
             
             app.get('/', function (req, res) {
-              res.send('Hello World!')
-            })
+              res.send('Hello World!');
+            });
             
             app.get('/secondpage', function (req, res) {
-              res.send('Hello from secondpage!')
-            })
+              res.send('Hello from secondpage!');
+            });
             
             
             app.listen(3000, function () {
-              console.log('Example app listening on port 3000!')
-            })
+              console.log('Example app listening on port 3000!');
+            });
 
-7. Run onderstaande commando in de commmand prompt.
+7. Run onderstaande commando in de commmand prompt/terminal.
 
         node app.js
         
-8. In de command prompt wordt nu de tekst **Example app listening on port 3000!** getoond.
+8. In de command prompt/terminal wordt nu de tekst **Example app listening on port 3000!** getoond.
 9. Open nu uw browser en surf naar *localhost:3000* er zou een pagina moeten verschijnen met de tekst **_Hello World!_**.
 10. Indien u naar *localhost:3000/secondpage* surft moet de tekstt **_Hello from secondpage!_** verschijnen.
 11. Dit is de basis voor een express webapp.
@@ -85,16 +97,16 @@
         </body>
         </html>
 
-4. Nu moeten we nog enkele zaken aanpassen aan de app.js
+4. Nu moeten we nog enkele zaken aanpassen in app.js
 
-    * De path module laden
+    * De path module laden om het pad te builden.
 
             var path = require('path');			//laad de path module
 
     * De express app instellen voor gebruik met views via app.set: [http://expressjs.com/en/api.html#app.set](http://expressjs.com/en/api.html#app.set)
 
             app.set('view engine', 'ejs');				//selecteer de view engine voor de app
-            app.set('views', path.join(__dirname, 'Views'));	//Stel de Views folder in als basis voor alle views
+            app.set('views', path.join(__dirname, 'Views'));	//Stel de Views folder in als basis voor alle views (__dirname is de dir naam van de huidige module)
 
     * render de view als response op een get request naar /
 
@@ -122,9 +134,8 @@
             
             
             app.listen(3000, function () {
-              console.log('Example app listening on port 3000!')
-            })
-            })
+              console.log('Example app listening on port 3000!');
+            });
 
 5. De ejs module is echter nog niet geïnstalleerd. Dit kan via de command promt.
 
@@ -136,7 +147,7 @@
  
 7. Test of het werkt door naar **localhost:3000** te surfen
 
-#Variabele doorgeven aan de views
+##Variabele doorgeven aan de views
 De res.render functie heeft ook een parameter locals. Hiermee kan je variabele meegeven aan de view.
 Zie documentatie [https://expressjs.com/en/4x/api.html#res.render](https://expressjs.com/en/4x/api.html#res.render)
 
@@ -148,7 +159,7 @@ De variabele title en datum kunnen nu in de view worden gebruikt.
                 title: "Welkom pagina",
                 datum: new Date()
           });
-        })
+        });
          
 2. Pas de view Index.ejs aan zodat deze de meegegeven variabele gebruikt.
 
@@ -172,13 +183,13 @@ De variabele title en datum kunnen nu in de view worden gebruikt.
 
 5. **<%= %>** wordt gebruikt om javascript elementen zoals variabele in de view te gebruiken. 
 Indien je in de view javascript code wilt uitvoeren maar niet rechtstreeks tonen in de view zoals bijvoorbeeld een for lus kan dit via **<% %>**.
-#Data uit views doorgeven aan app.js
+##Data uit views doorgeven aan app.js
 
-##Get method
+###Get method
 
 1. Bij een get request kunnen we req.param() gebruiken om de parameters in te lezen.
  Wanneer er bijvoorbeeld een parameter id is meegegeven door **/secondpage?id=1** kunnen we 
- met onderstaande code deze parameter lezen en opslaan in een vatiabele
+ met onderstaande code deze parameter lezen en opslaan in een variabele
 
         var ID = req.param("id");
         
@@ -193,7 +204,7 @@ Indien je in de view javascript code wilt uitvoeren maar niet rechtstreeks tonen
         })
 
 3. Wanneer u nu surft naar **localhost:3000/secondpage?id=1** krijgt u de titel **Welkom op pagina 2 met id "opgegeven id"**. 
-##Post method
+###Post method
 
 1. Bij een post request moet je req.body gebruiken. 
 Om dit te kunnen gebruiken moeten we eerst body-parser installeren en laden.
@@ -202,10 +213,10 @@ Documentatie zie [http://expressjs.com/en/4x/api.html#req.body](http://expressjs
     * Voeg onderstaande lijnen toe aan app.js
     
            var bodyParser = require('body-parser');             //body parsing module laden
-           app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+           app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded (extended true gives more possibilities types of variables that can be passed)
 
 2. De body-parser module moet nu nog worden geïnstalleerd. 
-Navigeer via de command prompt naar uw project map en type onderstaand commando.
+Navigeer via de command prompt/terminal naar uw project map en type onderstaand commando.
 
         npm install body-parser
         
@@ -213,14 +224,14 @@ Navigeer via de command prompt naar uw project map en type onderstaand commando.
 id is de naam van het veld uit de ejs file die de post request stuurt.
 
         var ID = req.body.id;
-#Mysql in app.js
+##Mysql in app.js
 1. Installeer mysql op raspberry pi (voor windows download mysql workbench)
 
         sudo apt-get install mysql-server
         
     * Tijdens de installatie zal je een wachtwoord moeten ingeven voor de root user.
 
-2. Log in op de mysql server.
+2. Log in op de mysql server via de terminal.
 
         mysql -p -u root
         
@@ -261,13 +272,13 @@ id is de naam van het veld uit de ejs file die de post request stuurt.
        
 6. Sluit MySQL af.
 
-        quit
+        quit;
         
 7. Open de command promt/terminal en ga naar de projectdir en installeer de mysql modules.
 
         npm install mysql
 
-8. Voeg volgende lijnen toe aan app.js
+8. Voeg volgende lijnen toe aan app.js. Vervang wel de waardes met je eigen database waardes.
 
         var mysql      = require('mysql');  //mysql module laden
         var connection = mysql.createConnection({
@@ -286,11 +297,103 @@ Indien alles in orde is wordt de waarde uit de category kolom van de eerste rij 
          
           console.log('The solution is: ', rows[0].category);
         });
+  
+10. Om SQL injectie tegen te gaan biedt de mysql module een escape functie aan.
+Je SQL querystring kan er dan bv. als volgt uitzien.
+
+        'SELECT * FROM users WHERE id = ' + connection.escape(userId);
+
         
-# Cross site request forgery (CSRF attacks)
+## Password hash
+Het is niet veilig om de wachtwoorden van je gebruikers in plain text in je database op te slaan. Het is veel veiliger om de wachtwoorden te hashen alvorens ze op te slaan.
+Dit kan je doen via de password-hash-and-salt module.
 
-1. Via node js is het relatief makkelijk om je webintrface the beveiligen tegen CSRF attacks via de csurf module. [https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html](https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html)
+1. Installeer de module via de cmd promt/terminal
 
+        npm install password-hash-and-salt
+        
+2. Gebruik de module in je code
+
+        var hashing = require('password-hash-and-salt');
+        
+3. Hash het wachtwoord
+
+        hashing(req.body.passwd).hash(function (error, hash) {
+            //doe iets met de gehashte waarde van req.body.passwd --> slaag deze op in de database
+        });
+        
+4. Verifieer of de ingegeven waarde geldig is voor de hash
+
+        //HASH_WAARDE is de hash code die je hebt opgeslagen in de database
+        hashing(req.body.password).verifyAgainst(HASH_WAARDE, function(error, verified) {
+            if(error)
+            {
+                //Wanneer er iets is misgelopen bij het verifiëren
+            }
+            else if(!verified) {
+                //wanneer alles goed is verlopen maar de waardes niet overeenkomen
+            }
+            else
+            {
+                //indien de waardes wel overeenkomen
+            }
+        });
+        
+##Session variables 
+[https://github.com/expressjs/session](https://github.com/expressjs/session)
+1. Installeer de session module
+
+        npm install express-session
+        
+2. Gebruik de session module in je project.
+
+        var session = require('express-session');
+        
+3. Voeg session als middleware toe aan je express app en geef de nodige opties mee met session. De secret optie wordt gebruikt om de session ID cookie te tekenen.
+ De saveUninitialized bepaalt of een unintialized session (nieuw maar nog niet aangepast) wordt opgeslagen in de session store. 
+ De resave optie bepaalt of de session opnieuw wordt opgeslagen in de session store ook als er geen aanpassingen zijn geweest gedurende de voorbije request.
+ De secret optie is verplicht en de andere 2 geven een warning als ze niet aanwezig zijn.
+
+        app.use(session({secret:"Mbellekens1995aqwzsxedc",saveUninitialized: false, resave: false}))    //use the session module and set some parameters
+        
+4. Vanaf nu kunnen we vanuit elke request een session variable toevoegen, aanpassen of verwijderen. 
+Het is bv. handig om de userid in een session variable op te slaan, op deze manier kan je nakijken of de gebruiker is ingelogd door te kijken of de userid beschikbaar is in de session.
+
+        app.get('/school', function(req,res){
+            if (req.session.userid == null)     //wanneer de userid niet bestaat, is de gebruiker niet ingelogd en wordt deze teruggestuurd naar de index page en krijgt hij een alert
+            {
+                req.session.alert = "Not yet logged in: log in to access the school tab";       //Zet een waarschuwing als sessionvariable, deze kan dan in de view worden meegegeven en getoond
+                res.redirect('/');
+            }
+            else
+            {
+                load_from_database(req.session.userid, function(items)
+                {
+                    req.session.alert = null
+                    req.session.items = items;
+                    res.render('Tabs',{
+                        title : "To do lists school",
+                        tab : tabs,
+                        Listitems: items,
+                        current_category : "school",
+                        edit_id: null,
+                        csrf: req.csrfToken(),
+                        Alert:req.session.alert
+                    });
+                });
+            }
+        });
+        
+5. We kunnen de session ook verwijderen met destroy bv. wanneer de gebruiker uitlogd.
+
+        app.get('/logout', function(req,res){
+            req.session.destroy();
+            res.redirect('/');
+        });
+## Cross site request forgery (CSRF attacks)
+
+1. Via node js is het relatief makkelijk om je webinterface the beveiligen tegen CSRF attacks via de csurf module. [https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html](https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html)
+        
         npm install csurf
         
 2. Voeg onderstaande lijn toe om csurf te gebruiken
@@ -319,19 +422,19 @@ Indien alles in orde is wordt de waarde uit de category kolom van de eerste rij 
         
 5. Op deze manier worden csrf attack tegen gehouden door de csurf middleware module
 
-#Maak een domeinnaam
+##Maak een domeinnaam
 1. Volg de stappen op: [http://www.dot.tk/nl/index.html](http://www.dot.tk/nl/index.html)
 
 2. Geef je extern ip adres in wanneer hier wordt om gevraagd.
-3. Port forward de nodige poorten (443 & 80, event 22 voor ssh) naar het intern statische ip van je raspberry pi.
-    1.  statisch ip adres instellen op raspberry pi [https://www.abelectronics.co.uk/kb/article/31/raspbian-jessie-static-ip-setup](https://www.abelectronics.co.uk/kb/article/31/raspbian-jessie-static-ip-setup)
-#Apache2 instellingen
+3. Port forward de nodige poorten (443, 80 en eventueel 22 voor ssh) naar het intern statische ip van je raspberry pi.
+    1.  statisch ip adres instellen op raspberry pi [https://www.raspberrypi.org/forums/viewtopic.php?t=124423](https://www.raspberrypi.org/forums/viewtopic.php?t=124423)
+##Apache2 instellingen
 
 1. Installeer Apache2.
 
         sudo apt-get install apache2
         
-2. test of de installatie is gelukt door naar het ip adres van je raspberry pi te surfen
+2. Test of de installatie is gelukt door naar het ip adres van je raspberry pi te surfen
 via een ander computer op hetzelfde netwerk. Indien alles correct is verlopen krijgt u de
 standaard webpagina te zien.
 
@@ -381,7 +484,7 @@ conf file like test.conf .
             SSLCertificateKeyFile /etc/letsencrypt/live/YOUR_DOMAIN_NAME/privkey.pem    //Wijst naar de file met de private key voor de server
             SSLCertificateChainFile /etc/letsencrypt/live/YOUR_DOMAIN_NAME/chain.pem    //wijst naar de file die de certificate chain bevat
             
-    * Maak de stel de proxy verder in.
+    * Stel de proxy verder in.
     
                <Location />     //match het extern pad dat we willen gebruiken
                   ProxyPass http://127.0.0.1:1337/          //pass externe naar interne server
@@ -414,7 +517,7 @@ conf file like test.conf .
 7. Restart Apache om de wijzigingen door te voeren.
 
         sudo service apache2 restart
-#Letsencrypt 
+##Letsencrypt 
 1. Installeer certbot
 
         sudo apt-get install python-certbot-apache -t jessie-backports
@@ -423,12 +526,12 @@ conf file like test.conf .
 
         certbot --apache certonly
         
-    * Je zal enkele zaken moeten opgeven zoals uw domeinnaam, ...
+    * Je zal enkele zaken moeten opgeven zoals uw domeinnaam, ... .
 
 3. Kijk het pad na dat is opgegeven in de apache conf file en pas dit indien nodig aan naar
 de plaats waar uw certificaten zijn opgeslagen.
 
-# Automysqlbackup
+## Automysqlbackup
 Om automatisch een back-up te nemen van de database met gebruikers en activiteiten gebruiken we automysqlbackup.
  1. Installeer automysqlbackup
         
@@ -459,26 +562,41 @@ Om automatisch een back-up te nemen van de database met gebruikers en activiteit
         
         //voeg onderstaande lijn toe. --> maak een back-up om middernacht, elke dag van elke week van elke maand
         0 0 * * * /usr/sbin/automysqlbackup
-# Gebruikte Node modules
+        
+##Opmerkingen
+Bij het overzetten van de applicatie van windows naar raspberry pi moet je enkele zaken nakijken. 
+1. Zorg dat Node.JS en npm geïnstalleerd zijn op je raspberry pi. 
 
-##Express module 
+        sudo apt-get install nodejs
+        sudo apt-get install npm
+        
+2. Bij het runnen van de code op raspberry pi kreeg ik een foutmelding " error while hashing password "missing callbackfunction" ".
+Dit was omdat bij het maken van het project op windows in de file package.json in de map node_modules\bcrypt-pbkdf een reference naar een andere map nl. node_modules\sshpk stond.
+Dit pad was absoluut en kwam dus niet overeen met het pad naar de map op de raspberry pi. We passen dit pad aan naar het overeenkomstige pad op de raspberry pi.
+
+        #  "_where": "C:\\Users\\Gebruiker\\Desktop\\Webservices_project\\Webapp_project\\node_modules\\sshpk", //deze lijn moet je vervangen met je eigen pad
+        "_where": "/home/pi/Documents/Webservices_project/Webapp_project/node_modules/sshpk",                   //in mijn geval is dit het nieuwe pad
+        
+## Gebruikte Node modules
+
+###Express module 
 [https://www.npmjs.com/package/express](https://www.npmjs.com/package/express)
 
-##Body-parser module 
+###Body-parser module 
 [https://www.npmjs.com/package/body-parser](https://www.npmjs.com/package/body-parser)
 
-##Password-hash-and-salt
+###Password-hash-and-salt
 [https://www.npmjs.com/package/password-hash-and-salt](https://www.npmjs.com/package/password-hash-and-salt)
 
-##Express-session
+###Express-session
 [https://www.npmjs.com/package/express-session](https://www.npmjs.com/package/express-session)
 
-##csurf
+###csurf
 * Maakt 
 ook gebruik van de session module --> zie documentatie
 [https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html](https://ewiggin.gitbooks.io/expressjs-middleware/content/csurf.html)
 
-# Bronnen
+## Bronnen
 * Hoofdbron voor opstart: [https://www.youtube.com/watch?v=QseHOX-5nJQ](https://www.youtube.com/watch?v=QseHOX-5nJQ)
 * Site van Node.js [https://nodejs.org/en/](https://nodejs.org/en/)
 * Site van express webframework voor Node.js [http://expressjs.com/](http://expressjs.com/)
@@ -498,4 +616,4 @@ ook gebruik van de session module --> zie documentatie
 * Gratis domeinnaam [http://www.dot.tk/nl/index.html](http://www.dot.tk/nl/index.html)
 * Statisch ip instellen [https://www.abelectronics.co.uk/kb/article/31/raspbian-jessie-static-ip-setup](https://www.abelectronics.co.uk/kb/article/31/raspbian-jessie-static-ip-setup)
 * Automysqlbackup installeren [https://serverpilot.io/community/articles/how-to-back-up-mysql-databases-with-automysqlbackup.html](https://serverpilot.io/community/articles/how-to-back-up-mysql-databases-with-automysqlbackup.html)
-* Automysqlbackup configureren [https://serverpilot.io/community/articles/how-to-back-up-mysql-databases-with-automysqlbackup.html](https://serverpilot.io/community/articles/how-to-back-up-mysql-databases-with-automysqlbackup.html) 
+* Crontab [http://stackoverflow.com/questions/5200551/how-to-set-a-cron-job-to-run-at-a-exact-time](http://stackoverflow.com/questions/5200551/how-to-set-a-cron-job-to-run-at-a-exact-time)
