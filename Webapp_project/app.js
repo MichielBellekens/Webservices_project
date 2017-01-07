@@ -342,8 +342,8 @@ app.post('/login', function(req,res){
 
 //perform all actions to logout the user
 app.get('/logout', function(req,res){
-    req.session.userid = null;
-    req.session.items =  null;
+    req.session.userid = null;  //just to be sure
+    req.session.items =  null;  //just to be sure
     req.session.destroy();
     res.redirect('/');
 });
