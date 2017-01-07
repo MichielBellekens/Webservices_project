@@ -377,23 +377,38 @@ app.post('/create_account', function(req,res){
             {
                 var querystring= "Select * FROM users where Mail = "+ connection.escape(mail);
                 connection.query(querystring,function(err,rows){
-                    if(err) throw err;
-                    req.session.alert = "An error occured while connecting to database";
-                    if(rows.length == 0)
+                    if(err)
+                    {
+                        req.session.alert = "An error occured while connecting to database";
+                        res.redirect('/create_account');
+                    }
+                    else if(rows.length == 0)
                     {
                         querystring = "INSERT INTO users (Mail, Password) VALUES ("+connection.escape(mail)+",'"+hash+"')";
                         connection.query(querystring, function(err, rows)
                         {
-                            if(err) throw err;
-
-                            querystring = "SELECT * FROM users where Mail="+connection.escape(mail);
-                            connection.query(querystring, function (err, rows) {
-                                if(err) throw err;
-
-                                req.session.userid = rows[0].ID;
-                                req.session.alert = null;
-                                res.redirect('/school');
-                            });
+                            if(err)
+                            {
+                                req.session.alert = "An error occured while storing your account in the database";
+                                res.redirect('/create_account');
+                            }
+                            else
+                            {
+                                querystring = "SELECT * FROM users where Mail="+connection.escape(mail);
+                                connection.query(querystring, function (err, rows) {
+                                    if(err)
+                                    {
+                                        req.session.alert = "An error occured while getting your from the database";
+                                        res.redirect('/create_account');
+                                    }
+                                    else
+                                    {
+                                        req.session.userid = rows[0].ID;
+                                        req.session.alert = null;
+                                        res.redirect('/school');
+                                    }
+                                });
+                            }
                         });
                     }
                     else
